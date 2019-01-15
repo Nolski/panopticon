@@ -19,6 +19,8 @@ RUN apt-get update && apt-get install -y \
     curl \
     gnupg
 
+RUN docker-php-ext-install pdo pdo_mysql
+
 # install node and npm
 RUN curl -sL https://deb.nodesource.com/setup_11.x | bash -
 RUN apt-get install -y nodejs
@@ -52,7 +54,11 @@ RUN composer install
 RUN npm install
 RUN npm install -g cross-env
 RUN php artisan migrate
+RUN npm run production
+
+ADD https://github.com/ufoscout/docker-compose-wait/releases/download/2.2.1/wait /wait
+RUN chmod +x /wait
 
 # Expose port 9000 and start php-fpm server
 EXPOSE 9000
-CMD php artisan serve --host=0.0.0.0 --port=9000
+CMD /wait && php artisan migrate && php artisan sync:structure && php artisan serve --host=0.0.0.0 --port=9000
