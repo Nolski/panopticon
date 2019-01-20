@@ -1,8 +1,8 @@
 version: '3.7'
 services:
-    backend:
+    app:
         build: .
-        container_name: "backend"
+        container_name: "app"
         volumes:
           - ./:/var/www/
           - /var/www/vendor/
@@ -12,6 +12,29 @@ services:
           - mysql
         ports:
           - 9000:9000
+        environment:
+            APP_DEBUG: 'true'
+            APP_KEY: 'base64:YxYquQaT2orH6SXcSyoQzWidSP3iVXe98DYU/7MBECg='
+            APP_ENV: 'dev'
+            DB_USERNAME: root
+            DB_PASSWORD: example
+            DB_HOST: mysql
+            WAIT_HOSTS: mysql:3306
+    sync-data:
+        build: .
+        container_name: "sync-data"
+        volumes:
+          - ./:/var/www/
+          - /var/www/vendor/
+        links:
+          - mysql
+          - app
+        depends_on:
+          - mysql
+          - app
+        ports:
+          - 9000:9000
+        command: ''
         environment:
             APP_DEBUG: 'true'
             APP_KEY: 'base64:YxYquQaT2orH6SXcSyoQzWidSP3iVXe98DYU/7MBECg='

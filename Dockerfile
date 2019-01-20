@@ -51,9 +51,9 @@ WORKDIR /var/www
 RUN mkdir -p /var/www/vendor/
 
 RUN composer install
+
 RUN npm install
 RUN npm install -g cross-env
-RUN php artisan migrate
 RUN npm run production
 
 ADD https://github.com/ufoscout/docker-compose-wait/releases/download/2.2.1/wait /wait
