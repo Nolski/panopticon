@@ -50,4 +50,25 @@ abstract class AbstractCase
     {
         return null;
     }
+
+    /**
+     * Determine if case can be saved or no
+     *
+     * @return bool
+     */
+    public function canSave($case) : bool
+    {
+        return true;
+    }
+
+    /**
+     * UpdateOrCreate keys
+     *
+     * @param $data
+     * @return array
+     */
+    public function savingKeys($data)
+    {
+        return array_only($data, 'commcare_id');
+    }
 }

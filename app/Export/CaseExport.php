@@ -35,7 +35,7 @@ class CaseExport extends Export
         $responses = $this->data->toArray(request());
 
         return array_map(function ($response) {
-            return array_only($response, $this->headers);
+            return array_only_sorted_by_keys($response, $this->headers);
         }, $responses);
     }
 }

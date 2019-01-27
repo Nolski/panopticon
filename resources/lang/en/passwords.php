@@ -18,5 +18,7 @@ return [
     'sent' => 'We have e-mailed your password reset link!',
     'token' => 'This password reset token is invalid.',
     'user' => "We can't find a user with that e-mail address.",
+    'password_rules' => 'The password must contain at least one Alphabetic (a-z), one number(0-9)',
+
 
 ];

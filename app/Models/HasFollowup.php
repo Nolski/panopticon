@@ -6,4 +6,11 @@ trait HasFollowup
     {
         return $this->morphMany(Followup::class, 'followup');
     }
+
+    public static function bootHasFollowup()
+    {
+        static::deleting(function ($model) {
+            $model->followups()->delete();
+        });
+    }
 }

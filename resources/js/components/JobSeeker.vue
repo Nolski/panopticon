@@ -62,6 +62,7 @@
           </ListItem>
 
           <ListItem
+            v-if="jobSeeker.city || jobSeeker.district"
             icon="icon-Location_Pin_1_1"
           >
             <span>
@@ -90,6 +91,7 @@
           </ListItem>
 
           <ListItem
+            v-if="jobSeeker.mobile_num"
             icon="icon-Phone_1_x40_2xpng_2"
           >
             {{ jobSeeker.mobile_num }}
@@ -116,6 +118,22 @@
               </span>
             </div>
           </ListItem>
+
+          <ListItem
+            icon="icon-Diamond_x40_2xpng_2"
+          >
+            <div>
+              <span>{{ 'irc.type_of_treatment' | trans }}: </span>
+              <span>
+                <a
+                  class="link text-blue-dark font-bold"
+                  :href="`${homeUrl}/job-seekers?filters[actual_intervention_received]=${jobSeeker.actual_intervention_received_key}`"
+                >
+                  {{ jobSeeker.actual_intervention_received }}
+                </a>
+              </span>
+            </div>
+          </ListItem>
         </ul>
 
         <div class="stared-note uppercase text-green text-left font-bold mt-10 -mb-2">
@@ -125,8 +143,8 @@
         <Notebox
           v-if="starredNote"
           :body="starredNote.note"
-          :date="starredNote.date"
-          :author="starredNote.author"
+          :date="starredNote.created_at_text"
+          :author="starredNote.user.name"
           :show-star="false"
           :show-creator-details="false"
           custom-class="border-none pl-0"
@@ -141,9 +159,9 @@
     </div>
     <div class="w-full lg:w-2/3 lg:px-2">
       <Panel
-        custom-class="min-h-900 max-h-900 "
+        custom-class="min-h-900 max-h-900 overflow-y-auto "
         :has-title="hasTitle"
-        :title="'irc.job_openings' | trans"
+        :title="'irc.recent_activity' | trans"
       >
         <ul class="flex list-reset border-0 custom-navs mb-4">
           <li
@@ -212,18 +230,21 @@
         </Btn>
         <div class="tab-content">
           <div
-            v-if="jobOpeningView === 'all'"
-            class=""
-          >
-            <Screenbox />
-            <Screenbox />
-          </div>
-
-          <div
             v-if="jobOpeningView === 'screening'"
             class=""
           >
-            <Screenbox />
+            <div v-if="screening.length > 0">
+              <Screenbox
+                v-for="screen in screening"
+                :key="screen.id"
+                :screen="screen"
+              />
+            </div>
+            <EmptyState
+              v-else
+              :message="'irc.no_screening' | trans"
+              custom-class="mt-5 min-h-200 text-lg"
+            />
           </div>
 
           <div
@@ -253,29 +274,16 @@
           </div>
 
           <div
-            v-if="jobOpeningView === 'notes'"
+            v-show="jobOpeningView === 'notes'"
             class=""
           >
-            <div v-if="notes && notes.length > 0">
-              <Notebox
-                v-for="note in notes"
-                :id="note.id"
-                :key="note.id"
-                :date="note.created_at_text"
-                :author="note.user.name"
-                :is-starred="note.is_starred"
-                :body="note.note"
-                @noteStarred="changeStarredNote"
-              />
-            </div>
-
-            <EmptyState
-              v-else
-              icon="icon-Note_x40_2xpng_2 text-3xl mt-3 block"
-              message="You don't have any notes!"
-              custom-class="mt-5 min-h-200 text-lg"
+            <NotesList
+              case-type="job-seeker"
+              :case-id="jobSeeker.id"
+              :additional-note="addedNote"
+              @starred="starredNote = $event"
+              @fetched="starredNote = $event.starred"
             />
-            <!--<notebox></notebox>-->
           </div>
         </div>
       </Panel>
@@ -290,9 +298,9 @@
 </template>
 
 <script>
-  import {get as getNotes} from '../API/noteAPI'
+  import {get as getScreening} from '../API/screeningAPI'
   import {post as addNote} from '../API/noteAPI'
-  import {setNoteStarred as starNote} from '../API/noteAPI'
+
 
   export default {
     props: {
@@ -311,32 +319,31 @@
         filters: false,
         showAddModalNote: false,
         starredNote: null,
-        notes: [],
         matches: [],
+        screening: [],
         matchedEndPoint: '',
-        candidateEndPoint: ''
+        candidateEndPoint: '',
+        addedNote: null
+      }
+    },
+    computed:{
+      homeUrl(){
+        return window.homeUrl
       }
     },
     created() {
       this.matchedEndPoint = `api/job-seekers/${this.jobSeeker.id}/matches`;
       this.candidateEndPoint = `api/job-seekers/${this.jobSeeker.id}/candidates`;
-      this.getNotes();
+      this.getScreening();
     },
     methods: {
-
-      getNotes() {
-        getNotes('job-seeker', this.jobSeeker.id)
-            .then(({data}) => {
-              this.notes = data.data;
-              this.notes.forEach(note => {
-                if (note.is_starred) {
-                  this.starredNote = note;
-                }
-              })
-            }).catch(error => {
-          console.log('Error : ', error);
-        });
+      getScreening() {
+        getScreening(this.jobSeeker.id)
+          .then(({data}) => {
+            this.screening = data.data;
+          })
       },
+
       changeJobOpeningview(view) {
         this.$forceUpdate();
         this.jobOpeningView = view;
@@ -346,50 +353,25 @@
           this.showAddNote = false;
         }
       },
+
       addNoteClick() {
         this.showAddModalNote = true;
       },
       closeModalNote() {
         this.showAddModalNote = false;
-
       },
       addNoteToList(noteText, type) {
-
-        addNote('job-seeker', this.jobSeeker.id, {note: noteText, type})
-            .then(resp => {
-              this.notes.push(resp.data.note);
-            }).catch(error => {
-          this.$toasted.show(error.response.data.message, {
-            icon: 'icon-Error_x40_2xpng_2',
-            className: 'toast-error'
+        addNote('job-seeker', this.jobSeeker.id, {note: noteText, type: type ? type : ''})
+          .then(resp => {
+            this.addedNote = resp.data.note;
           })
-        });
-
-      },
-      changeStarredNote(note) {
-        starNote('job-seeker', this.jobSeeker.id, note.id)
-            .then(({data}) => {
-
-              if (data.note.is_starred) {
-                this.starredNote = data.note;
-              } else {
-                this.starredNote = null;
-              }
-
-              this.$toasted.show(data.message, {
-                icon: 'icon-Stars_x40_2xpng_2 mr-2'
-              })
-
-              this.notes.forEach(note => {
-                note.is_starred = (data.note.id === note.id) && (data.note.is_starred);
-              })
+          .catch(error => {
+            this.$toasted.show(error.response.data.errors.note[0], {
+              icon: 'icon-Error_x40_2xpng_2',
+              className: 'toast-error'
             })
-            .catch(error => {
-              console.log('Error ', error)
-            });
-        ;
-      }
+          });
+      },
     },
-
   }
 </script>

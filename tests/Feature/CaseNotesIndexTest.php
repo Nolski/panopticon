@@ -61,7 +61,7 @@ class CaseNotesIndexTest extends TestCase
 
         $jobSeeker = factory(JobSeeker::class)->create();
 
-        $perPage = 5;
+        $perPage = 10;
         $notesCount = 50;
 
         $this->createManyNotes($jobSeeker, $notesCount);

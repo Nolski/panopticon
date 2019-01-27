@@ -14,27 +14,32 @@ class Cards
     public function get()
     {
         return [
-            JobSeekerCard::make(trans('irc.total_monthly_intakes'))
+
+            // ESO
+            JobSeekerCard::make(trans('irc.total_job_seekers_monthly_intakes'))
                 ->model(JobSeeker::class)
                 ->authorize($this->isEso())
+                ->with('icon', 'icon-Users_2_x40_2xpng_2')
                 ->count(),
+
             FollowUpCard::make(trans('irc.total_pending_followups'))
-                ->for(JobSeeker::class)
                 ->authorize($this->isEso())
+                ->with('icon', 'icon-Calendar_2_x40_2xpng_2')
                 ->count(),
 
-
+            // ESSO
             FollowUpCard::make(trans('irc.total_pending_followups'))
-                ->for(Firm::class)
                 ->authorize($this->isEsso())
+                ->with('icon', 'icon-Calendar_2_x40_2xpng_2')
                 ->count(),
-            ValueCard::make(trans('irc.total_job_openings'))
-                ->model(JobOpening::class)
+            JobOpeningCard::make(trans('irc.total_job_openings'))
                 ->authorize($this->isEsso())
+                ->with('icon', 'icon-Suitcase_x40_2xpng_2')
                 ->count(),
             FirmCard::make(trans('irc.total_firms_per_user'))
                 ->model(Firm::class)
                 ->authorize($this->isEsso())
+                ->with('icon', 'icon-Storefront_x40_2xpng_2')
                 ->count()
         ];
 

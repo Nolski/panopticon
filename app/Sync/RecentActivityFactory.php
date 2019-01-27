@@ -125,7 +125,6 @@ class RecentActivityFactory
             'created_at' => app(DateHandler::class)->resolve($form['received_on']),
             'user_id' => $userId
         ]);
-
     }
 
     /**

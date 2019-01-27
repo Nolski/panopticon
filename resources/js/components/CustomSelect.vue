@@ -20,6 +20,7 @@
       select-label=""
       deselect-label=""
       selected-label=""
+      :searchable="searchable"
       :multiple="multiple"
       :track-by="trackBy"
       :label="label"
@@ -34,7 +35,7 @@
       >
         <span
           v-if="option.label && option.label.length > 13"
-          v-tooltip="{content:option.label,classes:['tooltip-datatable']}"
+          v-tooltip="{offset:'50',content:option.label,classes:['tooltip-datatable']}"
           dir="auto"
         >
           {{ option.label }}
@@ -45,7 +46,6 @@
         >
           {{ option.label }}
         </span>
-
         <span
           v-else
           dir="auto"
@@ -91,6 +91,10 @@
         default: function () {
           return []
         }
+      },
+      searchable: {
+        type: Boolean,
+        default: true
       },
       multiple: {
         type: Boolean,

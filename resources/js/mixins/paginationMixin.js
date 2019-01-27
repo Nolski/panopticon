@@ -9,4 +9,16 @@ export default {
       }
     }
   },
+  methods:{
+
+    setPaginationFromMeta(meta){
+      this.pagination = {
+        total: meta.total,
+        lastPage: meta.last_page,
+        perPage: parseInt(meta.per_page),
+        currentPage: meta.current_page
+      };
+    }
+
+  }
 }

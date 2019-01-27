@@ -17,6 +17,10 @@ class UpdateUserAction
      */
     public function update(User $user, $data)
     {
+        if (isset($data['password']) and $data['password']) {
+            $data['password'] = bcrypt($data['password']);
+        }
+
         $user->update($data);
 
         $roles = $data['roles'] ?? [];

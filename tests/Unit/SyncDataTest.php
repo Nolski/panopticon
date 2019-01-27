@@ -50,33 +50,32 @@ class SyncDataTest extends TestCase
         $this->assertEquals(
             \Carbon\Carbon::parse($jobSeeker->opened_at)
                 ->modify(config('case.job-seeker.followup_schedule.1_month'))
-                ->toDateTimeString(),
+                ->toDateString(),
             $jobSeeker->followups->where('followup_period', '1_month')->first()->followup_date
         );
 
         $this->assertEquals(
             \Carbon\Carbon::parse($jobSeeker->opened_at)
                 ->modify(config('case.job-seeker.followup_schedule.6_weeks'))
-                ->toDateTimeString(),
+                ->toDateString(),
             $jobSeeker->followups->where('followup_period', '6_weeks')->first()->followup_date
         );
 
         $this->assertEquals(
             \Carbon\Carbon::parse($jobSeeker->opened_at)
                 ->modify(config('case.job-seeker.followup_schedule.3_months'))
-                ->toDateTimeString(),
+                ->toDateString(),
             $jobSeeker->followups->where('followup_period', '3_months')->first()->followup_date
         );
 
         $this->assertEquals(
             \Carbon\Carbon::parse($jobSeeker->opened_at)
                 ->modify(config('case.job-seeker.followup_schedule.6_months'))
-                ->toDateTimeString(),
+                ->toDateString(),
             $jobSeeker->followups->where('followup_period', '6_months')->first()->followup_date
         );
 
         $this->assertNotEmpty($jobSeeker->followups->first()->user_id);
-
     }
 
 

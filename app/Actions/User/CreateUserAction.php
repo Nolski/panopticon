@@ -16,6 +16,10 @@ class CreateUserAction
      */
     public function create($data)
     {
+        if (isset($data['password']) and $data['password']) {
+            $data['password'] = bcrypt($data['password']);
+        }
+
         $user = User::query()->create($data);
 
         $roles = $data['roles'] ?? [];

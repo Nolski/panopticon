@@ -18,6 +18,8 @@ class JobSeekerCard extends Card
     {
         $query = $this->getQuery();
 
+        $query->where('user_id', auth()->user()->id);
+
         switch ($this->method) {
             case 'count':
             default:

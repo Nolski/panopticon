@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Export\CaseExport;
 use App\Http\Controllers\Controller;
 use App\Http\Filters\CaseFilter;
 use App\Http\Requests\JobSeekerRequest;
+use App\Http\Resources\RecentActivityResource;
 use App\Http\Sortable\SortableCase;
 use App\Models\JobSeeker;
+use App\Models\Match;
 use Illuminate\Http\Request;
 
 class JobSeekerController extends Controller
@@ -36,7 +39,7 @@ class JobSeekerController extends Controller
     {
         abort_unless(auth()->user()->hasPermissionTo("cases.match"), 403);
 
-        $query = $jobSeeker->matches();
+        $query = $jobSeeker->matchedMatches();
 
         $query->filter($filter);
 
@@ -46,25 +49,47 @@ class JobSeekerController extends Controller
 
         $caseType = 'job-opening';
 
-        return case_resource_collection($caseType, $results, $caseType);
+        $collection = case_resource_collection($caseType, $results, $caseType);
+
+        if (request('export')) {
+            return export(CaseExport::class, $caseType . '_' . now()->format('Y:m:d'), $collection);
+        }
+
+        return $collection;
     }
 
     public function candidates(JobSeeker $jobSeeker, CaseFilter $filter, SortableCase $sortableCase)
     {
         abort_unless(auth()->user()->hasPermissionTo("cases.match"), 403);
 
-        $query = $jobSeeker->matches();
+        $query = $jobSeeker->candidateMatches();
 
         $query->filter($filter);
 
         $query->sort($sortableCase);
 
-        $query->where('is_candidate',1);
-
         $results = $query->paginate();
 
         $caseType = 'job-opening';
 
-        return case_resource_collection($caseType, $results, $caseType);
+        $collection = case_resource_collection($caseType, $results, $caseType);
+
+        if (request('export')) {
+            return export(CaseExport::class, $caseType . '_' . now()->format('Y:m:d'), $collection);
+        }
+
+        return $collection;
+    }
+
+
+    public function screening(JobSeeker $jobSeeker)
+    {
+        abort_unless(auth()->user()->hasPermissionTo("cases.job-seeker"), 403);
+
+        $query = $jobSeeker->recentActivities();
+
+        $results = $query->paginate();
+
+        return RecentActivityResource::collection($results);
     }
 }

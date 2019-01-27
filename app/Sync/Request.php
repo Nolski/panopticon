@@ -5,6 +5,8 @@
 
 namespace App\Sync;
 
+use GuzzleHttp\Promise;
+
 
 abstract class Request
 {
@@ -55,4 +57,37 @@ abstract class Request
 
         return json_decode($responseContents, true);
     }
+
+
+    public function sendMultipleRequests(array $params = [], $authorization)
+    {
+        $url = $this->url . '?' . $this->buildParamsHttpQuery($params);
+
+        $response = $this->client->get($url, [
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'Authorization' => $authorization
+            ]
+        ]);
+
+        $responseContents = $response->getBody()->getContents();
+
+        return json_decode($responseContents, true);
+    }
+
+    public static function multiRequest($urls, $options, $waitAll = true)
+    {
+        $guzzleClient = new \GuzzleHttp\Client();
+        $promises = [];
+
+        foreach ($urls as $key => $url) {
+            $promises[$key] = $guzzleClient->getAsync($url, $options);
+        }
+
+        $responses = $waitAll ? Promise\settle($promises)->wait() : Promise\unwrap($promises);
+
+        return $responses;
+    }
+
+
 }

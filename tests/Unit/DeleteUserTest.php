@@ -22,6 +22,8 @@ class DeleteUserTest extends TestCase
 
         $this->loginApi($user);
 
+        $this->createUserRoleWithPermission(auth()->user(), 'users_management');
+
         $this->delete('api/users/' . $user->id)
             ->assertStatus(200);
 

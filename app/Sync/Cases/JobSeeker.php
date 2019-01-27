@@ -1,6 +1,8 @@
 <?php namespace App\Sync\Cases;
 
 
+use App\Sync\QuestionHandler\ActualInterventionReceivedHandler;
+
 class JobSeeker extends AbstractCase
 {
     public $model = \App\Models\JobSeeker::class;
@@ -76,13 +78,17 @@ class JobSeeker extends AbstractCase
             ],
             'national_id' => [
                 'column_name' => 'national_id',
-                'column_type' => 'text',
+                'column_type' => 'string',
             ],
             'moi' => [
                 'column_name' => 'moi',
-                'column_type' => 'text',
+                'column_type' => 'string',
             ],
-
+            'actual_intervention_received' => [
+                'column_name' => 'actual_intervention_received',
+                'column_type' => 'string',
+                'valueHandler' => ActualInterventionReceivedHandler::class
+            ],
 
         ];
     }

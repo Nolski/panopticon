@@ -33,7 +33,7 @@
               >
                 <div class="absolute pl-4 pt-1 flex items-center text-grey-darkest font-bold">
                   <i class=" icon-Photo_x40_2xpng_2 mr-2" />
-                  Upload
+                  {{ 'irc.upload' | trans }}
                 </div>
                 <input
                   ref="fileInput"
@@ -81,6 +81,7 @@
               <input
                 id="email"
                 v-model="userData.email"
+                :disabled="!showEdit"
                 :class="`appearance-none block w-full bg-grey-lighter text-grey-darker rounded py-3
                px-4 leading-tight focus:outline-none focus:bg-white  ${!internalError['email']? 'focus:border-grey border border-grey-lighter focus:border-grey':'border border-red '}`"
                 type="text"
@@ -106,6 +107,7 @@
               <input
                 id="password"
                 v-model="userData.password"
+                :disabled="!showEdit"
                 :class="`appearance-none block w-full bg-grey-lighter text-grey-darker rounded py-3
                px-4 leading-tight focus:outline-none focus:bg-white  ${!internalError['password']? 'focus:border-grey border border-grey-lighter focus:border-grey':'border border-red '}`"
                 type="password"
@@ -131,6 +133,7 @@
               <input
                 id="password_confirm"
                 v-model="userData.password_confirmation"
+                :disabled="!showEdit"
                 :class="`appearance-none block w-full bg-grey-lighter text-grey-darker rounded py-3
                px-4 leading-tight focus:outline-none focus:bg-white  ${!internalError['password']? 'focus:border-grey border border-grey-lighter focus:border-grey':'border border-red '}`"
                 type="password"
@@ -214,7 +217,9 @@
         showEdit: true,
         uploadedImage: null,
         uploadedProfileImagePreview: null,
-        userData: {},
+        userData: {
+
+        },
         name: '',
         checkboxes: [],
         availableRoles: [],
@@ -262,11 +267,17 @@
       }
     },
     mounted() {
-      if (this.user) {
+      if (Object.keys( this.user).length !== 0 &&  this.user.constructor === Object) {
         this.userData = this.user;
         this.name = this.userData.name;
       } else {
-        this.userData = {};
+        this.userData = {
+          name:"",
+          email:"",
+          password:"",
+          password_confirmation:""
+
+        };
         this.uploadedImage = "";
         this.name = this.$options.filters.trans('irc.create_new_user');
       }
@@ -284,35 +295,39 @@
     methods: {
       handleUserCreate() {
         if (this.userData.id) {
-          updateUser(this.userData.id, this.formData).then(resp => {
-            this.$toasted.show(resp.data.message, {
-              icon: 'icon-Checkmark_2_x40_2xpng_2'
-            });
-            this.name = this.userData.name;
-            window.location.href = `/users/${resp.data.user.id}`
-          }).catch(error => {
-            if (error.response.status === 422) {
-              this.internalError = error.response.data.errors
-            } else {
-              this.$toasted.error("Something went wrong, cannot update userData.");
-            }
-          });
+          updateUser(this.userData.id, this.formData)
+              .then(resp => {
+                this.$toasted.show(resp.data.message, {
+                  icon: 'icon-Checkmark_2_x40_2xpng_2'
+                });
+                this.name = this.userData.name;
+                window.location.href = `${this.homeUrl}/users/${resp.data.user.id}`
+              })
+              .catch(error => {
+                if (error.response.status === 422) {
+                  this.internalError = error.response.data.errors
+                } else {
+                  this.$toasted.error("Something went wrong, cannot update userData.");
+                }
+              });
         }
         else {
-          createUser(this.formData).then(resp => {
-            this.name = this.userData.name;
-            this.internalError = [];
-            this.$toasted.show(resp.data.message, {
-              icon: 'icon-Checkmark_2_x40_2xpng_2'
-            });
-            window.location.href = `/users/${resp.data.user.id}`
-          }).catch(error => {
-            if (error.response.status === 422) {
-              this.internalError = error.response.data.errors
-            } else {
-              this.$toasted.error("Something went wrong, cannot create userData.");
-            }
-          });
+          createUser(this.formData)
+              .then(resp => {
+                this.name = this.userData.name;
+                this.internalError = [];
+                this.$toasted.show(resp.data.message, {
+                  icon: 'icon-Checkmark_2_x40_2xpng_2'
+                });
+                window.location.href = `${this.homeUrl}/users/${resp.data.user.id}`
+              })
+              .catch(error => {
+                if (error.response.status === 422) {
+                  this.internalError = error.response.data.errors
+                } else {
+                  this.$toasted.error("Something went wrong, cannot create userData.");
+                }
+              });
         }
       },
 

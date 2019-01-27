@@ -25,7 +25,8 @@ class JobOpeningResource extends CaseResource
             $data['date_opened_text'] = null;
         }
 
-        $data['matches_number'] = $this->matches()->count();
+        $data['matches_number'] = $this->matches_count;
+        $data['hired_matches_count'] = $this->hired_matches_count;
 
         return $data;
     }

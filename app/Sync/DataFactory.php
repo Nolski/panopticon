@@ -78,13 +78,17 @@ class DataFactory
      */
     protected function saveItem($caseObject, $case)
     {
+        if(!$caseObject->canSave($case)){
+            return ;
+        }
+
         if($this->removeClosedCase($case, $caseObject)){
             return ;
         }
 
         $data = $this->getCaseFields($caseObject, $case);
 
-        $model = $caseObject->model()::updateOrCreate(array_only($data, 'commcare_id'), $data);
+        $model = $caseObject->model()::updateOrCreate($caseObject->savingKeys($data), $data);
 
         $this->scheduleFollowups($model);
     }
@@ -148,7 +152,11 @@ class DataFactory
     protected function removeClosedCase($case, $caseObject)
     {
         if(array_get($case,'closed') === true){
-            $caseObject->model()::where('commcare_id',$case['id'])->delete();
+            $m = $caseObject->model()::where('commcare_id',$case['id'])->first();
+
+            if($m){
+                $m->delete();
+            }
 
             return true;
         }
@@ -166,13 +174,15 @@ class DataFactory
             return ;
         }
 
-        foreach(config('case.job-seeker.followup_schedule') as $key => $schedule){
+        $caseType = case_type($model);
+
+        foreach(config('case.'.$caseType.'.followup_schedule') as $key => $schedule){
 
             $followUp = $model->followups()->where('type','scheduled')->where('followup_period',$key)->first();
 
             if(!$followUp){
                 $model->followups()->create([
-                    'followup_date' => \Carbon\Carbon::parse($model->opened_at)->modify($schedule)->toDateTimeString(),
+                    'followup_date' => \Carbon\Carbon::parse($model->opened_at)->modify($schedule)->toDateString(),
                     'followup_period' => $key,
                     'type' => 'scheduled',
                     'user_id' => $model->user_id,

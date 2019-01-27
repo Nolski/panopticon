@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Export\CaseExport;
 use App\Http\Filters\CaseFilter;
 use App\Http\Requests\FirmRequest;
 use App\Http\Sortable\SortableCase;
@@ -24,6 +25,7 @@ class FirmController extends Controller
     /**
      * Display Job Seeker details page.
      *
+     * @param FirmRequest $request
      * @param Firm $firm
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
@@ -34,9 +36,7 @@ class FirmController extends Controller
 
     public function matches(Firm $firm, CaseFilter $filter, SortableCase $sortableCase)
     {
-        abort_unless(auth()->user()->hasPermissionTo("cases.match"), 403);
-
-        $query = $firm->matches();
+        $query = $firm->hiredMatches();
 
         $query->filter($filter);
 
@@ -46,6 +46,12 @@ class FirmController extends Controller
 
         $caseType = 'job-seeker';
 
-        return case_resource_collection($caseType, $results, $caseType);
+        $collection = case_resource_collection($caseType, $results, $caseType);
+
+        if (request('export')) {
+            return export(CaseExport::class, $caseType . '_' . now()->format('Y:m:d'), $collection);
+        }
+
+        return $collection;
     }
 }

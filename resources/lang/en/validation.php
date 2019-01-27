@@ -143,6 +143,11 @@ return [
     |
     */
 
-    'attributes' => [],
+    'attributes' => [
+        'password' => 'password',
+        'name' => 'name',
+        'email' => 'email',
+        'profile_picture' => 'profile picture'
+    ],
 
 ];

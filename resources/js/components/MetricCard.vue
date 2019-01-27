@@ -12,15 +12,15 @@
                         w-1/3 border-green-dark
                         text-left border-solid
                         font-bold border-b-4
-                        text-2xl"
+                        text-xl"
       >
-        {{ value }}
+        {{ getValue }}
       </div>
 
       <div
         class="text text-black
                         text-left font-bold
-                        sm:text-xs hd:text-sm mt-2 uppercase"
+                        text-xs mt-2 uppercase"
       >
         {{ label }}
       </div>
@@ -30,34 +30,53 @@
 
 
 <script>
-    import classNames from "classnames"
+  import classNames from "classnames"
 
-    export default {
-        /**
-         * all props have their needed types
-         * and are passed using the mixin
-         */
-        props:{
-            iconClass:{
-                type:String,
-                default:""
-            },
-            value:{
-                type:[String,Number],
-                default:0
-            },
-            label:{
-                type:String,
-                default:""
-            }
-        },
-        computed:{
-            iconClasses(){
-                return classNames([this.iconClass,'text-2xl',
-                    'text-green-dark' ]);
-            }
+  export default {
+    props: {
+      iconClass: {
+        type: String,
+        default: ""
+      },
+      value: {
+        type: [String, Number],
+        default: 0
+      },
+      label: {
+        type: String,
+        default: ""
+      }
+    },
+    /**
+     * all props have their needed types
+     * and are passed using the mixin
+     */
+    data() {
+      return {
+        lang: document.documentElement.lang === 'ar' ? 'ar' : 'en'
+      }
+    },
+    computed: {
+      getValue() {
+        if (this.value) {
+          if (this.lang === 'ar') {
+            return (this.value).toLocaleString('ar-EG')
+          }
+          else {
+            return this.value;
+          }
         }
+        if (this.lang === 'ar') {
+          return "٠"
+        }
+        return 0;
+      },
+      iconClasses() {
+        return classNames([this.iconClass, 'text-xl',
+          'text-green-dark']);
+      }
     }
+  }
 </script>
 
 <style lang="scss">

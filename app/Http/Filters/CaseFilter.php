@@ -63,10 +63,12 @@ class CaseFilter implements FilterInterface
         foreach ($filters as $name => $value) {
 
             if(is_array($value)){
-                $value = array_filter($value);
+                $value = array_filter($value,function($value){
+                    return $this->isValidValue($value);
+                });
             }
 
-            if (!$value) {
+            if (!$this->isValidValue($value)) {
                 continue;
             }
 
@@ -127,5 +129,44 @@ class CaseFilter implements FilterInterface
         } else {
             $builder->where($name, $value);
         }
+    }
+
+    /**
+     * Trigger field type uses range query
+     * @param $builder
+     * @param $name
+     * @param $value
+     */
+    protected function searchTrigger($builder, $name, $value){
+        if(!is_array($value)){
+            $builder->where($name, $value);
+        }
+
+        $value = (array) $value;
+
+        $from = (string) array_get($value, 'from');
+        $to = (string) array_get($value, 'to');
+
+        if(empty($from) && empty($to)){
+            return ;
+        }
+
+        if(!empty($from)){
+            $builder->where($name,'>=',$value);
+        }
+
+        if(!empty($to)){
+            $builder->where($name,'<=',$to);
+        }
+
+    }
+
+    protected function isValidValue($value)
+    {
+        if(is_array($value)){
+            return count($value) > 0;
+        }
+
+        return !is_null($value) && trim($value) !== "";
     }
 }

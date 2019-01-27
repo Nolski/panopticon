@@ -6,4 +6,12 @@ trait HasActivity
     {
         return $this->morphMany(RecentActivity::class, 'entity');
     }
+
+
+    public static function bootHasActivity()
+    {
+        static::deleting(function ($model) {
+            $model->recentActivities()->delete();
+        });
+    }
 }

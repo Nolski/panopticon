@@ -5,7 +5,7 @@
     ></breadcrumbs>
     <div class="" id="all-users">
         <user-view
-            :roles="{{$roles->toJson()}}"
+            :roles="{{$roles->values()->toJson()}}"
         ></user-view>
     </div>
 @endsection

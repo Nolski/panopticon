@@ -20,6 +20,8 @@ class ChangeStatusUserTest extends TestCase
 
         $this->loginApi();
 
+        $this->createUserRoleWithPermission(auth()->user(), 'users_management');
+
         $user = $this->createUser('deactivated');
 
         $this->post('api/users/' . $user->id . '/activate')
@@ -36,6 +38,8 @@ class ChangeStatusUserTest extends TestCase
     {
 
         $this->loginApi();
+
+        $this->createUserRoleWithPermission(auth()->user(), 'users_management');
 
         $user = $this->createUser();
 

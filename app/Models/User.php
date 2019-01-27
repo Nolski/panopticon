@@ -12,7 +12,14 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements HasMedia
 {
-    use Notifiable, SoftDeletes, MediaFunctionality, Notifiable, HasRoles;
+    use Notifiable,
+        SoftDeletes,
+        MediaFunctionality,
+        Notifiable,
+        HasRoles,
+        HasFilter,
+        Mapping,
+        Sortable;
 
     /**
      * The attributes that are mass assignable.
@@ -51,11 +58,6 @@ class User extends Authenticatable implements HasMedia
         parent::creating(function ($model) {
             $model->api_token = \Illuminate\Support\Str::random(50);
         });
-    }
-
-    public function setPasswordAttribute($password)
-    {
-        $this->attributes['password'] = bcrypt($password);
     }
 
     public function getProfilePictureAttribute()

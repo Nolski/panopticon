@@ -14,11 +14,15 @@ class CaseNotesController extends Controller
 
         abort_unless(auth()->user()->hasPermissionTo("notes.{$caseType}"), 403);
 
-        $record = $case->query()->where('id',$id)->firstOrFail();
+        $record = $case->query()->where('id', $id)->firstOrFail();
 
-        $results = $record->notes()->with('user')->latest()->paginate(5);
+        $results = $record->notes()->with('user')->latest()->paginate(10);
 
-        return NoteResource::collection($results);
+        $starredNote = $record->notes()->with('user')->onlyStarred()->first();
+
+        return NoteResource::collection($results)->additional([
+            'starred' => $starredNote ? new NoteResource($starredNote) : null
+        ]);
     }
 
     public function store($caseType, $id)
@@ -29,10 +33,11 @@ class CaseNotesController extends Controller
 
         $case = $this->getCaseModelOrFail($caseType);
 
-        $record = $case->query()->where('id',$id)->firstOrFail();
+        $record = $case->query()->where('id', $id)->firstOrFail();
 
         $note = $record->addNote([
             'note' => request('note'),
+            'type' => request('type.name'),
             'user_id' => auth()->id()
         ]);
 
@@ -44,10 +49,10 @@ class CaseNotesController extends Controller
 
     protected function getCaseModelOrFail($caseType)
     {
-        try{
+        try {
             return get_case_type_model($caseType);
-        }catch(\Throwable $e){
-            abort(404, trans('irc.cannot_find_case_type') );
+        } catch (\Throwable $e) {
+            abort(404, trans('irc.cannot_find_case_type'));
         }
     }
 
@@ -55,27 +60,25 @@ class CaseNotesController extends Controller
     {
         $case = $this->getCaseModelOrFail($caseType);
 
-        $record = $case->query()->where('id',$id)->firstOrFail();
+        $record = $case->query()->where('id', $id)->firstOrFail();
 
         $note = $record->notes()->find($noteId);
 
+        abort_unless($note, 404);
+
         $isStar = !$note->is_starred;
 
-        if($isStar){
+        if ($isStar) {
             $record->notes()->update([
                 'is_starred' => false
             ]);
-        }
-
-        if(!$note){
-            abort(404);
         }
 
         $note->update([
             'is_starred' => $isStar
         ]);
 
-        $message = ($isStar?trans('irc.notes_has_been_starred'):trans('irc.notes_has_been_unstarred') );
+        $message = ($isStar ? trans('irc.notes_has_been_starred') : trans('irc.notes_has_been_unstarred'));
 
         return response()->json([
             'message' => $message,

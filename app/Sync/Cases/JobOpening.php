@@ -60,6 +60,10 @@ class JobOpening extends AbstractCase
                 ],
                 'valueHandler' => \App\Sync\QuestionHandler\DateHandler::class,
             ],
+            'date_required' => [
+                'column_name' => 'date_required',
+                'column_type' => 'date',
+            ],
             'vdesc' => [
                 'column_name' => 'job_description',
                 'column_type' => 'text',
@@ -84,7 +88,11 @@ class JobOpening extends AbstractCase
                 'column_name' => 'manager_gender',
                 'column_type' => 'text',
                 'alias' => 'manager_gender'
-            ]
+            ],
+//            'employed' => [
+//                'column_name' => 'employed',
+//                'column_type' => 'string'
+//            ]
         ];
     }
 

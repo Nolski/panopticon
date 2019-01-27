@@ -12,7 +12,10 @@ class FirmResource extends CaseResource
      */
     public function toArray($request)
     {
+
         $data = parent::toArray($request);
+
+        $data['city_key'] = $this->city;
 
         $data['openings_count'] = $this->openings()->count();
 

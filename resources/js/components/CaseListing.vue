@@ -5,19 +5,34 @@
     >
       <slot name="header" />
 
-      <div class="text-right">
-        <button
-          class="bg-transparent pr-2 hover:bg-blue text-xs lg:text-sm text-blue-dark font-semibold hover:text-white
-        py-2 px-2 border border-blue hover:border-transparent rounded mb-3"
+      <div class="flex justify-end">
+        <Btn
+          v-if="exportAllowed && !loading"
+          btn-class="bg-transparent pr-2 hover:bg-grey-lightest flex items-center text-xs lg:text-sm text-blue-dark font-semibold
+          py-2 px-2 border rounded-full border-blue rounded mb-3"
+          :loading="exportLoading"
+          :disabled="exportLoading"
           @click="exportData"
         >
-          {{ 'irc.export' | trans }}
-        </button>
+          <span
+            slot="extra-button"
+            class="mr-2"
+          >
+            <img
+              width="15"
+              src="../../img/excel_icon.svg"
+              alt=""
+            >
+          </span>
+          <span slot="text">
+            {{ 'irc.export' | trans }}
+          </span>
+        </Btn>
       </div>
 
 
       <Filters
-        v-if="filters.length > 0 && hasFilters"
+        v-if="hasFilters && filters.length > 0"
         :filters="filters"
         :user-filters="userFilters"
         @change="filterChange($event, loadData)"
@@ -30,6 +45,7 @@
         :rows="rows"
         :pagination="pagination"
         :sorting="sorting"
+        :permissions="permissions"
         @pagechanged="loadData({page: $event})"
         @perPage="loadData({perPage: $event})"
         @sort="handleSort($event, loadData)"
@@ -66,6 +82,7 @@
           <td>
             <slot
               :row="row"
+              :load-data="loadData"
               name="end-td"
             />
           </td>
@@ -78,6 +95,7 @@
         >
           <button
             v-if="permissions.notes === true"
+            v-tooltip="{placement: 'left',content:$options.filters.trans('irc.view_notes'),classes:['tooltip-datatable']}"
             class="flex-1 text-xl  text-green-dark"
             @click="viewNotes(row.id)"
           >
@@ -100,7 +118,12 @@
 </template>
 
 <script>
-  import {get as getListing, getByUrl as getListingByUrl, exportData as exportDatByUrl} from '../API/caseListing'
+  import {
+    get as getListing,
+    getByUrl as getListingByUrl,
+    exportData as exportDataByType,
+    exportDataByUrl
+  } from '../API/caseListing'
   import FiltersProvider from "../mixins/FiltersProvider";
   import queryString from '../helpers/QueryString'
   import sortingProvider from "../mixins/sortingProvider";
@@ -118,6 +141,10 @@
         type: String,
         default: ""
       },
+      exportAllowed: {
+        type: Boolean,
+        default: true
+      },
       changeUrl: {
         type: Boolean,
         default: true
@@ -125,6 +152,10 @@
       hasFilters: {
         type: Boolean,
         default: true
+      },
+      perPage: {
+        type: Number,
+        default: 0
       }
     },
     data() {
@@ -134,11 +165,14 @@
         loading: false,
         rows: [],
         headers: [],
-        permissions:{}
+        permissions: {},
+        exportLoading: false,
+        perPageData: 0,
       }
     },
     mounted() {
       const queryStringObject = queryString.parse();
+      this.perPageData = this.perPage;
       this.loadData({
         page: queryStringObject.page,
         filters: queryStringObject.filters,
@@ -148,7 +182,7 @@
       });
     },
     methods: {
-      loadData({filters = {}, page = null, sorting = {}, perPage = 15} = {}) {
+      loadData({filters = {}, page = null, sorting = {}, perPage = this.perPageData} = {}) {
         filters = filters && typeof filters === "object" ? filters : {}
         sorting = sorting && typeof sorting === "object" ? sorting : {}
         const params = {
@@ -157,42 +191,42 @@
             ...this.userFiltersToParams()
           },
           page: !isNaN(parseInt(page, 10)) ? page : this.pagination.currentPage,
-          perPage: !isNaN(parseInt(perPage, 15)) ? perPage : this.pagination.perPage,
+          perPage: !isNaN(parseInt(perPage, 15)) && perPage != 0 ? perPage : this.pagination.perPage,
           sorting: {
             ...this.sorting,
             ...sorting,
           }
         };
         this.loading = true
-
-        let apiResponse;
-
-        if (this.endPoint.trim() !== "") {
-          apiResponse = getListingByUrl(this.endPoint, params)
-        } else {
-          apiResponse = getListing(this.type, params)
-        }
+        let apiResponse = this.apiRequest(params);
 
         return apiResponse.then(({data}) => {
-          if(this.changeUrl){
+
+          if (this.changeUrl) {
             this.changeUrlUsingParams(params);
           }
           this.rows = data.data;
-          this.$emit('fetch', {
-            data: data.data
-          })
+
+          this.$emit('fetch', data)
+
           this.headers = data.headers;
           this.filters = data.filters;
           this.sorting = data.sorting;
-          if (this.userFilters.length === 0) {
-            this.userFilters = this.initialUserFilters(data.filters.slice(0, 3), filters);
+
+          if (this.userFilters.length === 0 && this.hasFilters) {
+            this.userFilters = this.initialUserFilters(data.filters, filters);
           }
+
           this.pagination = {
             total: data.meta.total,
             lastPage: data.meta.last_page,
             perPage: parseInt(data.meta.per_page),
             currentPage: data.meta.current_page
           };
+
+          if (this.pagination.perPage != this.perPageData) {
+            this.perPageData = this.pagination.perPage;
+          }
           this.permissions = data.permissions || {}
           this.loading = false;
         }).catch(error => {
@@ -210,13 +244,17 @@
         history.pushState({}, document.title, url);
       },
       exportData() {
-        exportDatByUrl(this.type,{
+        this.exportLoading = true;
+        this.exportRequest({
           filters: {
             ...this.userFiltersToParams(),
           },
           export: true,
           paginate: "false"
-        }).then(exportDataHelper.exportCallback)
+        }).then(resp => {
+          this.exportLoading = false;
+          exportDataHelper.exportCallback(resp)
+        })
       },
       viewNotes(caseId) {
         this.showNotesModal = true;
@@ -226,7 +264,20 @@
         this.showNotesModal = false;
 
       },
-
+      apiRequest(params = {}) {
+        if (this.endPoint.trim() !== "") {
+          return getListingByUrl(this.endPoint, params)
+        } else {
+          return getListing(this.type, params)
+        }
+      },
+      exportRequest(params = {}) {
+        if (this.endPoint.trim() !== "") {
+          return exportDataByUrl(this.endPoint, params)
+        } else {
+          return exportDataByType(this.type, params)
+        }
+      }
     }
   }
 </script>

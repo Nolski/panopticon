@@ -11,7 +11,14 @@
 |
 */
 
-Auth::routes();
+Route::group([
+    'prefix' => LaravelLocalization::setLocale(),
+    'middleware' => [
+        'localize',
+    ]
+], function(){
+    Auth::routes(['register' => false]);
+});
 
 Route::group([
 
@@ -40,4 +47,5 @@ Route::group([
 
     Route::get('/job-openings', 'JobOpeningController@index')->name('job-openings');
     Route::get('/job-openings/{jobOpening}/match', 'JobOpeningMatchController@index')->name('job-openings.match');
+    Route::get('/job-openings/{jobOpening}/match/saved', 'JobOpeningMatchController@saved')->name('job-openings.saved');
 });

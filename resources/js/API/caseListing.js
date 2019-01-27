@@ -16,3 +16,9 @@ export const exportData = (type, params = {}) => {
         responseType: 'arraybuffer',
     });
 }
+
+export const exportDataByUrl = (url, params = {}) => {
+    return $httpRequester.get(`${url}?${queryString.serialize(params)}`, {
+        responseType: 'arraybuffer',
+    });
+}

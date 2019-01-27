@@ -1,9 +1,16 @@
 <template>
   <div>
-    <Panel
-      custom-class=""
+    <CaseListing
+      :end-point="usersEndPoint"
+      :change-url="true"
+      :export-allowed="false"
+      :has-filters="true"
+      type="firm"
     >
-      <div class="text-right">
+      <div
+        slot="header"
+        class="text-right mb-3"
+      >
         <Btn
           theme="success"
           @click="addUser"
@@ -18,62 +25,45 @@
         </Btn>
       </div>
 
-      <!--<Filters-->
-      <!--v-if="filters.length > 0"-->
-      <!--:filters="filters"-->
-      <!--:user-filters="userFilters"-->
-      <!--@change="filterChange($event, loadData)"-->
-      <!--@filterSelect="filterSelect($event, loadData)"-->
-      <!--/>-->
-      <Datatable
-        v-if="!loading"
-        :header="headers"
-        :rows="rows"
-        :pagination="pagination"
-        @pagechanged="loadData({page: $event})"
-        @perPage="loadData({perPage: $event})"
+      <template
+        slot="end-td"
+        slot-scope="{row,loadData: loadUsers}"
       >
-        <td
-          slot="extra"
-          slot-scope="{row}"
+        <button
+          v-tooltip="{placement: 'top',content:$options.filters.trans('irc.view'),classes:['tooltip-datatable']}"
+          class="flex-1 text-xl mr-1 text-green-dark"
+          @click="viewAccount(row)"
         >
-          <button
-            v-tooltip="{placement: 'top',content:$options.filters.trans('irc.view'),classes:['tooltip-datatable']}"
-            class="flex-1 text-xl mr-1 text-green-dark"
-            @click="viewAccount(row)"
-          >
-            <i class="icon-Eye_x40_2xpng_2" />
-          </button>
+          <i class="icon-Eye_x40_2xpng_2" />
+        </button>
 
-          <button
-            v-tooltip="{placement: 'top',content:$options.filters.trans('irc.edit'),classes:['tooltip-datatable']}"
-            class="flex-1 text-xl mr-1 text-green-dark"
-            @click="editAccount(row)"
-          >
-            <i class="icon-Pencil_x40_2xpng_2" />
-          </button>
+        <button
+          v-tooltip="{placement: 'top',content:$options.filters.trans('irc.edit'),classes:['tooltip-datatable']}"
+          class="flex-1 text-xl mr-1 text-green-dark"
+          @click="editAccount(row)"
+        >
+          <i class="icon-Pencil_x40_2xpng_2" />
+        </button>
 
-          <button
-            v-if="row.status ==='activated'"
-            v-tooltip="{placement: 'top',content:$options.filters.trans('irc.deactivate'),classes:['tooltip-datatable']}"
-            class="flex-1 text-xl  text-green-dark"
-            @click="deActivateUser(row)"
-          >
-            <i class="icon-Lock_x40_2xpng_2" />
-          </button>
+        <button
+          v-if="row.status ==='activated'"
+          v-tooltip="{placement: 'top',content:$options.filters.trans('irc.deactivate'),classes:['tooltip-datatable']}"
+          class="flex-1 text-xl  text-green-dark"
+          @click="deActivateUser(row, loadUsers)"
+        >
+          <i class="icon-Lock_x40_2xpng_2" />
+        </button>
 
-          <button
-            v-else
-            v-tooltip="{placement: 'top',content: $options.filters.trans('irc.activate') ,classes:['tooltip-datatable']}"
-            class="flex-1 text-xl  text-green-dark"
-            @click="reActivateUser(row)"
-          >
-            <i class="icon-Unlock_x40_2xpng_2" />
-          </button>
-        </td>
-      </Datatable>
-      <PageLoader v-else />
-    </Panel>
+        <button
+          v-else
+          v-tooltip="{placement: 'top',content: $options.filters.trans('irc.activate') ,classes:['tooltip-datatable']}"
+          class="flex-1 text-xl  text-green-dark"
+          @click="reActivateUser(row, loadUsers)"
+        >
+          <i class="icon-Unlock_x40_2xpng_2" />
+        </button>
+      </template>
+    </CaseListing>
   </div>
 </template>
 
@@ -90,69 +80,15 @@
     props: {},
     data() {
       return {
-        users: [],
-        rows: [],
-        headers: [
-          {
-            name: "name",
-            label: this.$options.filters.trans('irc.name')
-          },
-          {
-            name: "email",
-            label: this.$options.filters.trans('irc.email')
-          },
-          {
-            name: "created_at",
-            label: this.$options.filters.trans('irc.created_at')
-          },
-
-        ],
+        usersEndPoint:'',
         loading: false,
       }
     },
-    mounted() {
-      const queryStringObject = queryString.parse();
-
-      this.loadData({
-        page: queryStringObject.page,
-        perPage: queryStringObject.perPage
-      });
+    created() {
+      this.usersEndPoint = `api/users`;
     },
     methods: {
-      loadData({filters = {}, page = null, sorting = {}, perPage = 15} = {}) {
-        // filters = filters && typeof filters === "object" ? filters : {}
-        // sorting = sorting && typeof sorting === "object" ? sorting : {}
-        const params = {
-          page: !isNaN(parseInt(page, 10)) ? page : this.pagination.currentPage,
-          perPage: !isNaN(parseInt(perPage, 15)) ? perPage : this.pagination.perPage,
-        };
-        this.loading = true;
-        return getUsers(params)
-            .then(({data}) => {
-              this.changeUrlUsingParams(params);
-              this.loading = false;
-              this.rows = data.data;
-              this.pagination = {
-                total: data.meta.total,
-                lastPage: data.meta.last_page,
-                perPage: parseInt(data.meta.per_page),
-                currentPage: data.meta.current_page
-              };
-            }).catch(error => {
-              console.log('Error : ', error);
-            });
-      },
-      changeUrlUsingParams(params) {
-
-        let serializedQueryString = queryString.serialize(params);
-
-        serializedQueryString = serializedQueryString !== '' ? '?' + serializedQueryString : '';
-
-        const url = window.location.protocol + "//" + window.location.host + window.location.pathname + serializedQueryString;
-
-        history.pushState({}, document.title, url);
-      },
-      deActivateUser(user) {
+      deActivateUser(user, loadData) {
         Vue.swal({
           title:  this.$options.filters.trans('irc.confirm_deactivate_user'),
           type: 'warning',
@@ -164,10 +100,15 @@
           if(result.value){
             deactivateUser(user.id)
                 .then(resp => {
+                  user.status = 'deactivated';
+
                   this.$toasted.show(resp.data.message, {
                     icon: 'icon-Lock_x40_2xpng_2'
                   });
-                  this.loadData();
+
+                  if(typeof loadData === 'function'){
+                    loadData();
+                  }
 
                 })
                 .catch(error => {
@@ -178,7 +119,7 @@
         });
 
       },
-      reActivateUser(user) {
+      reActivateUser(user, loadData) {
         Vue.swal({
           title:  this.$options.filters.trans('irc.confirm_activate_user'),
           type: 'warning',
@@ -190,11 +131,14 @@
           if(result.value){
             activateUser(user.id)
                 .then(resp => {
+                  user.status = 'activated';
                   this.$toasted.show(resp.data.message, {
                     icon: 'icon-Unlock_x40_2xpng_2'
                   })
 
-                  this.loadData();
+                  if(typeof loadData === 'function'){
+                    loadData();
+                  }
                 })
                 .catch(error => {
                   console.log(' error !', error);

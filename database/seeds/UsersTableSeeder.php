@@ -34,6 +34,10 @@ class UsersTableSeeder extends Seeder
             return;
         }
 
+        if (isset($user['password']) and $user['password']) {
+            $user['password'] = bcrypt($user['password']);
+        }
+
         User::query()->insert($user);
     }
 }

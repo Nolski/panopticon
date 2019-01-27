@@ -1,13 +1,13 @@
 <nav id="sidebar" class="px-4 py-4 relative">
     <div class="flex toggle-lang items-center justify-between">
         {!! switch_url(true) !!}
-        <button type="button" id="sidebarCollapse" class="text-white minifiy-button text-2xl  ">
-            <i class="icon-List_1_x40_2xpng_2"></i>
+        <button type="button" id="sidebarCollapse" class="text-white minifiy-button ">
+            <i class="icon-List_1_x40_2xpng_2 text-base"></i>
         </button>
     </div>
 
     <div class="sidebar-header mb-6 text-center mt-10">
-        <img src="{{ asset('img/logo_big.png') }}" width="90" height="79" alt="">
+        <img src="{{ asset('img/logo_big.png') }}" width="70" height="79" alt="">
     </div>
 
     <div class="text-white flex items-center">
@@ -16,7 +16,7 @@
              alt="{{auth()->user()->name}}">
 
         <div>
-            <div class="text-bold hide-min ">{{auth()->user()->name}}</div>
+            <div class="text-bold text-sm hide-min ">{{auth()->user()->name}}</div>
             {{--<div class="text-grey-dark text-base hide-min">Location: Amman</div>--}}
         </div>
     </div>
@@ -26,7 +26,7 @@
         <li class="uppercase  text-white {{ request()->routeIs('home') ?'active' :''}} ">
             <a href="{{route('home')}}" class="text-white flex items-center  text-sm remove-text-minified py-4 relative mb-3">
                 <i class="icon-Presentation_3_1 min-w-30 text-2xl mr-4 ml-3"></i>
-                <span class="sm:text-xs xl:text-base hide-min">{{__('irc.dashboard')}}</span>
+                <span class="sm:text-xs  hide-min">{{__('irc.dashboard')}}</span>
             </a>
         </li>
 
@@ -35,7 +35,7 @@
                 <a href="{{route('job-seekers')}}"
                    class="text-white flex items-center  text-sm remove-text-minified py-4 relative mb-3">
                     <i class="icon-Users_2_x40_2xpng_2 min-w-30  text-2xl mr-4 ml-3"></i>
-                    <span class="sm:text-xs xl:text-base hide-min">{{__('irc.all_job_seekers')}}</span>
+                    <span class="sm:text-xs  hide-min">{{__('irc.all_job_seekers')}}</span>
                 </a>
             </li>
         @endif
@@ -44,7 +44,7 @@
             <li class="uppercase  text-white {{ request()->is('*firms*') ?'active' :''}}">
                 <a href="{{route('firms')}}" class="text-white text-sm flex items-center remove-text-minified   py-4 relative mb-3">
                     <i class="icon-Storefront_x40_2xpng_2 min-w-30 pin-l pin-t text-xl mr-4 ml-3"></i>
-                    <span class="sm:text-xs xl:text-base hide-min">{{__('irc.employers')}}</span>
+                    <span class="sm:text-xs  hide-min">{{__('irc.employers')}}</span>
                 </a>
             </li>
         @endif
@@ -54,7 +54,7 @@
                 <a href="{{route('job-openings')}}"
                    class="text-white flex items-center  text-sm remove-text-minified py-4 relative mb-3">
                     <i class="icon-Briefcase_x40_2xpng_2 min-w-30  pin-l pin-t text-xl mr-4 ml-3"></i>
-                    <span class="sm:text-xs xl:text-base hide-min">{{__('irc.jobs')}}</span>
+                    <span class="sm:text-xs  hide-min">{{__('irc.jobs')}}</span>
                 </a>
             </li>
         @endif
@@ -63,7 +63,7 @@
             <a href="{{route('users')}}"
                class="text-white flex items-center  text-sm remove-text-minified py-4 relative mb-3">
                 <i class="icon-Users_1_x40_2xpng_2 min-w-30  pin-l pin-t text-xl mr-4 ml-3"></i>
-                <span class="sm:text-xs xl:text-base hide-min">{{__('irc.users')}}</span>
+                <span class="sm:text-xs  hide-min">{{__('irc.users')}}</span>
             </a>
         </li>
         @endif
@@ -75,7 +75,7 @@
                href="{{ route('logout') }}"
                onclick="event.preventDefault();document.getElementById('logout-form').submit();">
                 <i class=" min-w-30 icon-Lock_x40_2xpng_2  pin-l pin-t text-2xl mr-4 ml-3"></i>
-                <span class="sm:text-xs xl:text-base hide-min">{{__('irc.logout')}}</span>
+                <span class="sm:text-xs  hide-min">{{__('irc.logout')}}</span>
             </a>
 
             <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">

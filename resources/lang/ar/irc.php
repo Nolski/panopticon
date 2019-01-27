@@ -11,11 +11,15 @@ return [
     'users' => 'المستخدمين',
     'logout' => 'تسجيل خروج',
     'job_openings' => 'الوظائف المتاحة',
+    'match_job' => 'بحث عن مرشحين',
+    'view_notes' => 'عرض الملاحظات',
+    'all_notes' => 'كل الملاحظات',
 
     'total_monthly_intakes' => 'عدد المدخلات الشهرية',
+    'total_job_seekers_monthly_intakes' => 'مدخلات الباحثين عن عمل لهذا الشهر',
     'total_pending_followups' => 'متابعات معلقة',
     'total_job_openings' => 'الوظائف المفتوحة',
-    'total_firms_per_user' => 'اصحاب العمل لكل مستخدم',
+    'total_firms_per_user' => 'عدد مدخلات اصحاب العمل لهذا الشهر',
     'followups' => 'المتابعات',
     'recent_activity' => 'اخر النشاطات',
     'no_data_to_present' => 'لا يوجد بيانات لعرضها.',
@@ -25,19 +29,26 @@ return [
     'name' => 'الاسم',
     'email' => 'البريد الالكتروني',
     'created_at' => 'تاريخ الانشاء',
+    'send_reset_link' => 'ارسال رابط اعادة التفعيل',
+    'reset_password' => 'تغيير كلمةالمرور',
+    'back_to_login' => 'العودة الى صفحة الدخول',
+    'forgot_password' => 'هل نسيت كلمة المرور؟',
+    'login' => 'الدخول',
 
-    'id' => 'ID',
+    'id' => 'الرقم',
     'living_in' => 'يعيش في',
     'will_work_qiz' => 'Willing to work in QIZ',
     'starred_note' => 'ملاحظة مميزة',
     'no_starred_note' => 'لا يوجد ملاحظة مميزة.',
 
     'all' => 'الجميع',
-    'screening' => 'Screening',
+    'screening' => 'اخر النشاطات',
     'matches' => 'المتوافقين',
     'matched' => 'المتوافقين',
     'candidates' => 'المرشحين',
     'notes' => 'الملاحظات',
+    'viewing' => 'عرض',
+    'out_of' => 'من اصل',
 
     'add_note' => 'اضافة ملاحظة',
     'type_of_followup' => 'نوع المتابعة',
@@ -53,7 +64,7 @@ return [
     'notes_loading' => 'جاري تحميل الملاحظات، يرجى الانتظار.',
     'no_notes_available' => 'لا يوجد اي ملاحظات.',
     'openings_count' => 'عدد الوظائف',
-    'job_id' => 'Job ID',
+    'job_id' => 'رقم الوظيفة',
     'firm_name' => 'اسم المؤسسة',
     'date_opened' => 'تاريخ الانشاء',
     'save_matches' => 'حفظ المرشحين',
@@ -96,11 +107,44 @@ return [
     'user_deactivated' => 'تم تعطيل المستخدم بنجاح',
     'export' => 'تحميل إكسل',
     'no_date_selected' => 'لم يتم تحديد تاريخ معين',
+    'events_are_being_loaded' => 'جاري تحميل المتابعات!',
+    'no_screening' => 'لا يوجد نشاطات!',
 
+    'type' => 'النوع',
+    'due_date' => 'تاريخ الاستحقاق',
+    'background' => 'الخلفية',
 
     'notes_created_successfully' => 'تم اضافة الملاحظة بنجاح',
     'cannot_find_case_type' => 'Cannot find this case type',
     'notes_has_been_starred' => 'تم تعين ملاحظة مميزة',
     'notes_has_been_unstarred' => 'تم الالغاء',
+    'back' => 'عودة للخلف',
+    'saved_matches' => 'المرشحين',
+    'jobseeker_status' => 'حالة المتقدم',
+    'remember_me' => 'تذكدني',
+    'match_statuses' => [
+        \App\Models\Match::STATUS_NEW => 'جديد',
+        \App\Models\Match::STATUS_CANDIDATE => 'مرشح',
+        \App\Models\Match::STATUS_MATCHED => 'متوافق',
+        \App\Models\Match::STATUS_HIRED => 'تم التوظيف',
+    ],
+
+    'admin_dashboard' => 'لوحة التحكم الخاصة بالادمن',
+    'type_of_treatment' => 'ما هو التدخل الذي قدمته لهذا المستفيد؟',
+
+    'hired_matches_count' => 'تم توظيفهم',
+    'score' => 'النتيجة',
+
+    'roles' => 'الادوار',
+
+    'notes_options' => [
+        'follow_up' => 'المتابعة',
+    ],
+
+    'job_opening_match' => 'اختيار المتوافقين مع الوظيفة',
+
+    'job_opening_saved_match' => 'المتوافقين مع الوظيفة',
+
+    'matches_saved' => 'تم حفظ المتوافقين.'
 
 ];

@@ -20,13 +20,20 @@ class Schema
 
             foreach ($fields as $field) {
                 $column = $table->{$field['column_type']}($field['column_name'])->nullable();
+
+                $defaultValue = array_get($field,'default');
+
+                if($defaultValue){
+                    $column->default($defaultValue);
+                }
+
                 if ($method === 'table' && LaravelSchema::hasColumn($table->getTable(), $field['column_name'])) {
                     $column->change();
                 }
             }
 
             if ($method === 'create' || !LaravelSchema::hasColumn($table->getTable(), 'commcare_id')) {
-                $table->string('commcare_id', 60)->index();
+                $table->string('commcare_id', 60)->index()->nullable()->default(null);
             }
 
             if ($method === 'create') {

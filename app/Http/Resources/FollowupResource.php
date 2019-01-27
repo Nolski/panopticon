@@ -41,7 +41,7 @@ class FollowupResource extends JsonResource
     private function getBasicInfo($resource)
     {
         if(method_exists($resource,'basicInfo')){
-            return $resource->basicInfo();
+            return array_filter($resource->basicInfo());
         }
 
         return '';

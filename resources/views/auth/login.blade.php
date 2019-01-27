@@ -1,9 +1,12 @@
 @extends('layouts.layout')
 
 @section('content')
+
     <div class="w-full max-w-24 mx-auto">
         <div class="image-top">
-            <div class=" p-4 rounded-t  " style="background: rgba(64, 94, 128, 1);">
+            <div class="image-container p-4 rounded-t text-center " style="background: rgba(64, 94, 128, 1);">
+                {!! switch_url(true) !!}
+
                 <img style="height: 140px;" src="{{ asset('img/logo_big.png') }}" alt="">
             </div>
         </div>
@@ -11,7 +14,7 @@
             @csrf
             <div class="mb-4">
                 <label class="block text-grey-darker text-sm font-bold mb-2" for="username">
-                    Username
+                    {{trans('irc.email')}}
                 </label>
                 <input id="email" type="email" style=""
                        class="shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker leading-tight focus:outline-none focus:shadow-outline{{ $errors->has('email') ? ' border-red is-invalid' : '' }}"
@@ -19,13 +22,13 @@
 
                 @if ($errors->has('email'))
                     <span class="invalid-feedback text-xs" role="alert">
-                                        <strong>{{ $errors->first('email') }}</strong>
+                                        <strong class="text-xs text-red">{{ $errors->first('email') }}</strong>
                                     </span>
                 @endif
             </div>
             <div class="mb-6">
                 <label class="block text-grey-darker text-sm font-bold mb-2" for="password">
-                    Password
+                    {{trans('irc.password')}}
                 </label>
                 <input id="password" type="password" style=""
                        class="shadow appearance-none border  rounded w-full py-2 px-3 text-grey-darker mb-3 leading-tight focus:outline-none focus:shadow-outline{{ $errors->has('password') ? ' is-invalid border-red' : '' }}"
@@ -33,7 +36,7 @@
 
                 @if ($errors->has('password'))
                     <span class="invalid-feedback text-xs" role="alert">
-                                        <strong>{{ $errors->first('password') }}</strong>
+                                        <strong class="text-xs text-red">{{ $errors->first('password') }}</strong>
                                     </span>
                 @endif
 
@@ -50,7 +53,7 @@
                            id="remember" {{ old('remember') ? 'checked' : '' }}>
 
                     <label class="form-check-label text-sm" for="remember">
-                        {{ __('Remember Me') }}
+                        {{ __(trans('irc.remember_me')) }}
                     </label>
                     {{--<span class="text-sm">--}}
                     {{--Send me your newsletter!--}}
@@ -60,13 +63,13 @@
             <div class="flex items-center justify-between">
                 <button type="submit"
                         class="bg-blue hover:bg-blue-dark text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                    {{ __('Login') }}
+                    {{ __(trans('irc.login')) }}
                 </button>
 
                 @if (Route::has('password.request'))
                     <a class="dec inline-block no-underline align-baseline font-bold text-sm text-blue hover:text-blue-darker"
                        href="{{ route('password.request') }}">
-                        {{ __('Forgot Your Password?') }}
+                        {{ __(trans('irc.forgot_password')) }}
                     </a>
                 @endif
             </div>

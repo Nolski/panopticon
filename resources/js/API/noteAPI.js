@@ -1,7 +1,8 @@
 import {$httpRequester} from './httpRequester';
+import queryString from "../helpers/QueryString";
 
 export const get = (caseType, caseId, params = {}) => {
-  return $httpRequester.get(`api/case-notes/${caseType}/${caseId}/`)
+  return $httpRequester.get(`api/case-notes/${caseType}/${caseId}?${queryString.serialize(params)}`)
 }
 
 

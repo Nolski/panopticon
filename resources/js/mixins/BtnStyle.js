@@ -19,6 +19,10 @@ export default {
     disabled: {
       type: Boolean,
       default: false
+    },
+    loading: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {
@@ -26,19 +30,20 @@ export default {
       let style = "";
       switch (this.theme) {
         case 'default':
-          style = 'bg-white border border-grey-light hover:bg-grey-lightest text-grey-darkest'
+          style = 'bg-white border border-grey-light hover:bg-grey-lightest text-grey-darkest no-underline'
           break
         case 'primary':
-          style = 'bg-blue hover:bg-blue-dark text-white'
+          style = 'bg-blue hover:bg-blue-dark text-white no-underline'
           break
         case 'success':
-          style = 'bg-green-theme hover:bg-green text-white'
+          style = 'bg-green-theme hover:bg-green text-white no-underline'
           break
         case 'danger':
-          style = 'bg-red hover:bg-red-dark text-white'
+          style = 'bg-red hover:bg-red-dark text-white no-underline'
           break
       }
-      return classNames([style, 'font-bold', 'rounded-full', 'py-2', 'px-4', this.btnClass]);
+      return classNames([style, 'font-bold', 'rounded-full', 'py-2', 'px-4' ,
+        this.btnClass,  'flex items-center', this.disabled ? 'cursor-not-allowed' : '']);
     }
   },
 }

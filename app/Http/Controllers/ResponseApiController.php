@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Export\CaseExport;
 use App\Http\Filters\CaseFilter;
+use App\Http\Mapping\MappingCase;
 use App\Http\Resources\CaseDataResource;
 use App\Http\Sortable\SortableCase;
 
@@ -15,9 +16,10 @@ class ResponseApiController extends Controller
      * @param $caseType
      * @param CaseFilter $caseFilter
      * @param SortableCase $sortableCase
+     * @param MappingCase $mappingCase
      * @return CaseDataResource
      */
-    public function index($caseType, CaseFilter $caseFilter, SortableCase $sortableCase)
+    public function index($caseType, CaseFilter $caseFilter, SortableCase $sortableCase, MappingCase $mappingCase)
     {
 
         abort_unless(auth()->user()->hasPermissionTo("cases.{$caseType}"), 403);
@@ -27,6 +29,12 @@ class ResponseApiController extends Controller
         $query->filter($caseFilter);
 
         $query->sort($sortableCase);
+
+        $query->mapping($mappingCase);
+
+        if(empty(request('sorting.column'))){
+            $query->orderBy('opened_at', 'desc');
+        }
 
         $results = $this->handlePagination($query);
 

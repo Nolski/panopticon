@@ -30,6 +30,8 @@ class SaveMatchesTest extends TestCase
 
         $this->createPermissions('cases.match.save');
 
+        $this->syncStructure('job-seeker');
+        $this->syncStructure('match');
         $this->syncStructure('job-opening');
 
         $jobOpening = factory(JobOpening::class)->create();
@@ -44,7 +46,8 @@ class SaveMatchesTest extends TestCase
         $this->loginApi();
 
         $this->createUserRoleWithPermission(auth()->user(), 'cases.match.save');
-
+        $this->syncStructure('job-seeker');
+        $this->syncStructure('match');
         $this->syncStructure('job-opening');
 
         $jobOpening = factory(JobOpening::class)->create();
@@ -59,6 +62,8 @@ class SaveMatchesTest extends TestCase
 
         $this->createUserRoleWithPermission(auth()->user(), 'cases.match.save');
 
+        $this->syncStructure('job-seeker');
+        $this->syncStructure('match');
         $this->syncStructure('job-opening');
 
         $jobOpening = factory(JobOpening::class)->create();
@@ -66,6 +71,7 @@ class SaveMatchesTest extends TestCase
         $this->json('post', route('api.matches', $jobOpening->id),[
             'matches' => 'string'
         ])->assertJsonValidationErrors('matches');
+
     }
 
     public function test_save_matches_requires_matches_items_to_be_numeric()
@@ -74,6 +80,8 @@ class SaveMatchesTest extends TestCase
 
         $this->createUserRoleWithPermission(auth()->user(), 'cases.match.save');
 
+        $this->syncStructure('job-seeker');
+        $this->syncStructure('match');
         $this->syncStructure('job-opening');
 
 
@@ -97,11 +105,12 @@ class SaveMatchesTest extends TestCase
 
         $this->createUserRoleWithPermission(auth()->user(), 'cases.match.save');
 
-        $this->syncStructure('job-opening');
-
         $this->syncStructure('job-seeker');
 
         $this->syncStructure('match');
+
+        $this->syncStructure('job-opening');
+
 
         $jobOpening = factory(JobOpening::class)->create();
 
@@ -135,16 +144,11 @@ class SaveMatchesTest extends TestCase
 
         $this->assertCount(5, $jobOpening->matches);
 
-        $this->assertCount(0, $jobOpening->matches()->where('is_candidate',1)->get());
-
         $this->json('post', route('api.matches', $jobOpening->id), [
-            'matches' => [$match1->id,$match2->id,]
+            'matches' => [$match1->job_seeker_id,$match2->job_seeker_id,]
         ])->assertStatus(200);
 
-        $this->assertCount(2, $jobOpening->matches()->where('is_candidate',1)->get());
-
-        $this->assertCount(3, $jobOpening->matches()->where('is_candidate',0)->get());
-
+        $this->assertCount(2, $jobOpening->fresh()->matches);
     }
 
     public function test_it_save_matches_and_unset_who_is_not_selected()
@@ -191,19 +195,75 @@ class SaveMatchesTest extends TestCase
             'is_candidate' => 1
         ]);
 
+
         $this->assertCount(5, JobSeeker::all());
 
         $this->assertCount(5, $jobOpening->matches);
 
-        $this->assertCount(2, $jobOpening->matches()->where('is_candidate',1)->get());
-
         $this->json('post', route('api.matches', $jobOpening->id), [
-            'matches' => [$match1->id,$match2->id,]
+            'matches' => [$match1->job_seeker_id,$match2->job_seeker_id,]
         ])->assertStatus(200);
 
-        $this->assertCount(2, $jobOpening->matches()->where('is_candidate',1)->get());
+        $this->assertCount(2, $jobOpening->fresh()->matches);
+    }
 
-        $this->assertCount(3, $jobOpening->matches()->where('is_candidate',0)->get());
+    public function test_it_create_match_record()
+    {
+        $this->withoutExceptionHandling();
 
+        $this->loginApi();
+
+        $this->createUserRoleWithPermission(auth()->user(), 'cases.match.save');
+
+        $this->syncStructure('job-opening');
+
+        $this->syncStructure('job-seeker');
+
+        $this->syncStructure('match');
+
+        $jobOpening = factory(JobOpening::class)->create();
+
+        $jobSeekers = factory(JobSeeker::class,5)->create();
+
+        $this->assertCount(5, JobSeeker::all());
+
+        $this->json('post', route('api.matches', $jobOpening->id), [
+            'matches' => [
+                $jobSeekers->get(0)->id,
+                $jobSeekers->get(1)->id,
+            ]
+        ])->assertStatus(200);
+
+        $this->assertCount(2, $jobOpening->matches()->get());
+    }
+
+    public function test_it_has_candidate_as_default_value()
+    {
+        $this->withoutExceptionHandling();
+
+        $this->loginApi();
+
+        $this->createUserRoleWithPermission(auth()->user(), 'cases.match.save');
+
+        $this->syncStructure('job-opening');
+
+        $this->syncStructure('job-seeker');
+
+        $this->syncStructure('match');
+
+        $jobOpening = factory(JobOpening::class)->create();
+
+        $jobSeekers = factory(JobSeeker::class,5)->create();
+
+        $this->assertCount(5, JobSeeker::all());
+
+        $this->json('post', route('api.matches', $jobOpening->id), [
+            'matches' => [
+                $jobSeekers->get(0)->id,
+                $jobSeekers->get(1)->id,
+            ]
+        ])->assertStatus(200);
+
+        $this->assertEquals(Match::STATUS_CANDIDATE, $jobOpening->matches()->first()->pivot->status);
     }
 }

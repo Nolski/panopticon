@@ -75,6 +75,7 @@ class CaseNotesCreateTest extends TestCase
     {
         $this->withoutExceptionHandling();
 
+
         $this->syncStructure('job-opening');
 
         $this->createCase('firm');
@@ -84,6 +85,8 @@ class CaseNotesCreateTest extends TestCase
     {
         $this->withoutExceptionHandling();
 
+        $this->syncStructure('job-seeker');
+        $this->syncStructure('match');
         $this->createCase('job-opening');
     }
 

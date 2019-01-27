@@ -19,7 +19,7 @@ class PropertiesMetaData
 
             $baseCommcareFieldName = base_commcare_field_name($question['hashtagValue']);
 
-            $keys = ['commcare_id' => $baseCommcareFieldName];
+            $keys = ['commcare_id' => $baseCommcareFieldName, 'case_type' => $caseType];
 
             $values = [
                 'column_name' => $question['case_question']['column_name'],

@@ -29,4 +29,9 @@ class ForgotPasswordController extends Controller
     {
         $this->middleware('guest');
     }
+
+//if(!empty(session()->get('url.intended'))){
+//session()->put('url.intended', force_url_lang(session()->get('url.intended')));
+//}
+
 }

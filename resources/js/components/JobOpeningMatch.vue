@@ -1,8 +1,9 @@
 <template>
   <CaseListing
-    v-if="!loading"
+    :per-page="50"
     :end-point="route"
     type="job-seeker"
+    :export-allowed="false"
     @fetch="onFetch"
   >
     <template slot="header">
@@ -12,15 +13,40 @@
             {{ jobOpening.job_title }}
           </h1>
           <Btn
-            btn-class="text-xs"
+            v-if="!isFetching"
+            btn-class="text-xs mr-2"
             theme="success"
+            :loading="loading"
+            :disabled="loading"
             @click="saveMatches"
           >
             <span slot="text">
               {{ 'irc.save_matches' | trans }}
             </span>
           </Btn>
+
+          <AnchorLink
+            v-if="!isFetching && savedSelections.length > 0"
+            btn-class="text-xs"
+            theme="primary"
+            :loading="loading"
+            :disabled="loading"
+            :href="savedMatchesUrl"
+          >
+            <span slot="text">
+              {{ 'irc.saved_matches' | trans }}
+            </span>
+          </AnchorLink>
         </div>
+        <div class="mb-4">
+          <label class="text-green-theme font-bold text-xs uppercase mb-2">
+            {{ 'irc.firm_name' | trans }}
+          </label>
+          <div class="text-black">
+            {{ jobOpening.firm.firm_name }}
+          </div>
+        </div>
+
         <div class="mb-4">
           <label class="text-green-theme font-bold text-xs uppercase mb-2">
             {{ 'irc.job_description' | trans }}
@@ -50,17 +76,6 @@
       />
     </template>
   </CaseListing>
-
-  <Panel v-else>
-    <div class="text-center py-16">
-      <Spinner
-        size="lg"
-      />
-      <div class="mt-5">
-        Saving Matches
-      </div>
-    </div>
-  </Panel>
 </template>
 
 <script>
@@ -81,13 +96,22 @@
     data() {
       return {
         selections: [],
-        loading: false
+        savedSelections:[],
+        loading: false,
+        isFetching : true
+      }
+    },
+    computed:{
+      savedMatchesUrl(){
+        const currentLocation = window.location.pathname.replace(/^\/|\/$/g, '');
+        return `/${currentLocation}/saved`
       }
     },
     methods: {
       onFetch(response) {
-        this.selections = response.data.filter(item => Boolean(item.pivot.is_candidate) === true)
-          .map(item => item.id)
+        this.selections = [...new Set([...this.selections, ...response.matches])]
+        this.savedSelections = [...response.matches]
+        this.isFetching = false;
       },
       handleSelection(id) {
         const index = this.selections.indexOf(id)
@@ -100,16 +124,20 @@
       },
       saveMatches() {
         this.loading = true;
+        let _self = this;
         axios.post(`/api/job-openings/${this.jobOpening.id}/matches`, {
           matches: this.selections
         }).then(({data}) => {
-          this.loading = false;
-          this.$toasted.show('Matches saved', {
+
+          this.$toasted.show(this.$options.filters.trans('irc.matches_saved'), {
             icon: 'icon-Floppy_Disk_1_1',
           })
-        })
 
-      }
+          setTimeout(() => {
+            window.location = this.savedMatchesUrl
+          }, 700)
+        })
+      },
     }
   }
 </script>

@@ -44,6 +44,8 @@ Vue.component('JobSeeker',require('./components/JobSeeker.vue').default);
 Vue.component('UsersListing',require('./components/UserListing.vue').default);
 Vue.component('UserView',require('./components/UserView.vue').default);
 Vue.component('JobOpeningMatch', require('./components/JobOpeningMatch.vue').default);
+Vue.component('JobOpeningSavedMatches', require('./components/JobOpeningSavedMatches.vue').default);
+Vue.component('NotesList', require('./components/NotesList').default);
 
 
 // UI components
@@ -62,6 +64,7 @@ Vue.component('JobOpening',require('./components/JobOpening.vue').default);
 Vue.component('PageLoader',require('./components/PageLoader.vue').default);
 Vue.component('AnchorLink',require('./components/Link.vue').default);
 Vue.component('CustomSelect',require('./components/CustomSelect.vue').default);
+Vue.component('RangeFilter',require('./components/RangeFilter.vue').default);
 Vue.component('CheckboxGroup',require('./components/CheckboxGroup.vue').default);
 Vue.component('ValueCard',require('./components/MetricCard.vue').default);
 Vue.component('AddNoteModal',require('./components/AddNoteModal.vue').default);
@@ -72,6 +75,7 @@ Vue.component('Filters',require('./components/Filters.vue').default);
 Vue.component('Pagination',require('./components/Pagination.vue').default);
 Vue.component('Screenbox',require('./components/Screenbox.vue').default);
 Vue.component('ViewNoteModal',require('./components/ViewNotesModal.vue').default);
+Vue.component('Alert',require('./components/Alert.vue').default);
 Vue.component('Popper',Popper);
 
 

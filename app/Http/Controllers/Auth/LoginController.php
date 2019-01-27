@@ -21,13 +21,6 @@ class LoginController extends Controller
     use AuthenticatesUsers;
 
     /**
-     * Where to redirect users after login.
-     *
-     * @var string
-     */
-    protected $redirectTo = '/home';
-
-    /**
      * Create a new controller instance.
      *
      * @return void
@@ -36,4 +29,28 @@ class LoginController extends Controller
     {
         $this->middleware('guest')->except('logout');
     }
+
+
+    /**
+     * Show the application's login form.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function showLoginForm()
+    {
+
+        if(!empty(session()->get('url.intended'))){
+            session()->put('url.intended', force_url_lang(session()->get('url.intended')));
+        }
+
+        return view('auth.login');
+    }
+
+    public function redirectTo()
+    {
+        return route('home');
+    }
+
+
+
 }

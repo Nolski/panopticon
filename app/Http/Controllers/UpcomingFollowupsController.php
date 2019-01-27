@@ -26,7 +26,11 @@ class UpcomingFollowupsController extends Controller
 
         $query->where('user_id', auth()->id());
 
-        $results = $query->paginate();
+        if (request('export')) {
+            $results = $query->get();
+        }else{
+            $results = $query->paginate();
+        }
 
         $collection = FollowupResource::collection($results);
 

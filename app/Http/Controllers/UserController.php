@@ -8,14 +8,15 @@ use App\Actions\User\UpdateUserAction;
 use App\Actions\User\UsersList;
 use App\Http\Requests\UserRequest;
 use App\Http\Resources\UserResource;
+use App\Http\Resources\UserResourceCollection;
 use App\Models\User;
 
 class UserController extends Controller
 {
     public function index()
     {
-        $users = app(UsersList::class)->get([], $this->perPage());
-        return UserResource::collection($users);
+        $users = app(UsersList::class)->get($this->perPage());
+        return (new UserResourceCollection($users));
     }
 
     public function edit(User $user)

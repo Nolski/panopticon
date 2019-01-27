@@ -4,6 +4,7 @@ use App\Sync\QuestionHandler\MatchFirmIdHandler;
 use App\Sync\QuestionHandler\MatchIsCandidate;
 use App\Sync\QuestionHandler\MatchJobOpeningIdHandler;
 use App\Sync\QuestionHandler\MatchJobSeekerIdHandler;
+use App\Sync\QuestionHandler\MatchStatus;
 
 class Match extends AbstractCase
 {
@@ -70,13 +71,51 @@ class Match extends AbstractCase
                     'ara' => 'Is Candidate'
                 ],
                 'valueHandler' => MatchIsCandidate::class
-            ]
+            ],
 
+            'status' => [
+                'column_name' => 'status',
+                'column_type' => 'string',
+                'property' => true,
+                'type' => 'select',
+                'translations' => [
+                    'en' => 'Status',
+                    'ara' => 'Status'
+                ],
+                'valueHandler' => MatchStatus::class,
+                'default' => \App\Models\Match::STATUS_CANDIDATE
+            ],
         ];
     }
 
     public function caseType(): string
     {
         return 'match';
+    }
+
+    public function canSave($case): bool
+    {
+        $questions = $this->questions();
+
+        $jobOpeningId = app(MatchJobOpeningIdHandler::class)->handle(
+            $case, 'job_opening_id', $questions['job_opening_id'], $this
+        );
+
+        $jobSeekerId = app(MatchJobSeekerIdHandler::class)->handle(
+            $case, 'job_seeker_id', $questions['job_seeker_id'], $this
+        );
+
+        if(empty($jobOpeningId) || empty($jobSeekerId)){
+            return false;
+        }
+
+        return true;
+
+        return \App\Models\Match::where('job_seeker_id',$jobSeekerId)->where('job_opening_id',$jobOpeningId)->count() === 1;
+    }
+
+    public function savingKeys($data)
+    {
+        return array_only($data, ['job_seeker_id','job_opening_id']);
     }
 }

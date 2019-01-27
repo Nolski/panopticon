@@ -4,7 +4,7 @@
   <div :class="panelStyle">
     <div
       v-if="title"
-      class="text-black text-left font-bold text-xl mb-4 flex"
+      class="text-black text-left font-bold text-lg mb-4 flex"
     >
       <span class="flex-1">
         {{ title }}

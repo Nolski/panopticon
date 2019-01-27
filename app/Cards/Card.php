@@ -12,18 +12,20 @@ abstract class Card
 
     protected $authorizationCallback;
 
+    protected $meta = [];
+
     abstract public function apply();
 
     abstract public function component();
 
     public function toArray()
     {
-        return [
+        return array_merge([
             'name' => $this->getName(),
             'label' => $this->getLabel(),
             'value' => $this->apply(),
             'component' => $this->component(),
-        ];
+        ], $this->meta);
     }
 
 
@@ -97,6 +99,14 @@ abstract class Card
         return function () {
             return true;
         };
+    }
+
+
+    public function with($key, $value)
+    {
+        $this->meta[$key] = $value;
+
+        return $this;
     }
 
 

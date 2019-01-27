@@ -1,9 +1,11 @@
 <?php namespace Tests\Unit;
 
 use Illuminate\Support\Facades\Schema;
-use App\Models\Form;use Tests\TestCase;
+use App\Models\Form;
+use Tests\TestCase;
 use Tests\Fixtures\Classes\StructureFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Fixtures\Classes\Models\DefaultValue as DefaultValueModel;
 
 class SyncStructureTest extends TestCase
 {
@@ -145,6 +147,61 @@ class SyncStructureTest extends TestCase
 
         $this->assertTrue(
             Schema::hasColumn(app(\App\Models\Firm::class)->getTable(), 'user_id')
+        );
+    }
+
+
+    public function test_it_support_default_value()
+    {
+        $this->mockStructureRequest();
+
+        $factory = app(StructureFactory::class);
+
+        $type = "default-value";
+
+        $factory->make($type);
+
+
+        \DB::table(app(DefaultValueModel::class)->getTable())->insert([
+            'user_id' => 1
+        ]);
+
+        $this->assertEquals(
+            'DefaultValue',
+            \DB::table(app(DefaultValueModel::class)->getTable())->first()->default_column
+        );
+    }
+
+
+    public function test_it_support_default_value_on_already_exists_column()
+    {
+        $this->mockStructureRequest();
+
+        $factory = app(StructureFactory::class);
+
+        $type = "default-value";
+
+        $factory->make($type);
+
+
+        \DB::table(app(DefaultValueModel::class)->getTable())->insert([
+            'user_id' => 1
+        ]);
+
+        $this->assertEquals(
+            'DefaultValue',
+            \DB::table(app(DefaultValueModel::class)->getTable())->first()->default_column
+        );
+
+        $factory->make($type);
+
+        \DB::table(app(DefaultValueModel::class)->getTable())->insert([
+            'user_id' => 1
+        ]);
+
+        $this->assertEquals(
+            'DefaultValue',
+            \DB::table(app(DefaultValueModel::class)->getTable())->first()->default_column
         );
     }
 }

@@ -91,7 +91,7 @@ if (!function_exists('withCount')) {
     {
         $withCountArray = $model->withCount ?? [];
         return array_map(function ($value) {
-            return $value . '_count';
+            return snake_case($value) . '_count';
         }, $withCountArray);
     }
 }
@@ -196,6 +196,7 @@ if (!function_exists('map_options')) {
                 continue;
             }
 
+            $data[$key . '_key'] = $value;
 
             $option = $optionsRepository->CommCareAndPropertyIs($value, $field->id);
 
@@ -217,3 +218,71 @@ if (!function_exists('map_options')) {
 }
 
 
+if (!function_exists('array_insert_after')) {
+    /**
+     * @url https://gist.github.com/wpscholar/0deadce1bbfa4adb4e4c
+     *
+     * @param array $array
+     * @param $key
+     * @param $value
+     * @return array
+     */
+    function array_insert_after(array $array, $key, $value)
+    {
+        $keys = array_keys($array);
+        $index = array_search($key, $keys, true);
+        $pos = false === $index ? count($array) : $index + 1;
+        if (!is_array($value)) {
+            $value = [$value];
+        }
+        return array_merge(array_slice($array, 0, $pos), $value, array_slice($array, $pos));
+    }
+}
+
+
+if (!function_exists('array_search_key_by_value')) {
+    /**
+     * @url https://stackoverflow.com/questions/6661530/php-multidimensional-array-search-by-value
+     *
+     * @param array $array
+     * @param $key
+     * @param $value
+     * @return array
+     */
+    function array_search_key_by_value(array $array, $key, $value)
+    {
+        foreach ($array as $k => $val) {
+            if (array_get($val, $key) === $value) {
+                return $k;
+            }
+        }
+
+        return null;
+    }
+}
+
+/**
+ * Force url to switch it's language to current lang
+ */
+if (!function_exists('force_url_lang')) {
+    function force_url_lang($url, $locale = null)
+    {
+        if (!$locale) {
+            $locale = \App::getLocale();
+        }
+
+        return \LaravelLocalization::getLocalizedURL($locale, $url);
+    }
+}
+
+
+if (!function_exists('array_only_sorted_by_keys')) {
+    function array_only_sorted_by_keys($array, $keys)
+    {
+        $newArray = [];
+        foreach ($keys as $index => $key) {
+            $newArray[$key] = $array[$key];
+        }
+        return $newArray;
+    }
+}

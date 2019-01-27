@@ -47,23 +47,27 @@ Route::group([
 
     Route::post('/job-openings/{jobOpening}/matches', 'JobOpeningMatchController@store')->name('api.matches');
 
-    Route::get('/job-seekers/{jobOpening}/matches', 'JobSeekerController@matches')->name('api.job-seeker.matches');
-    Route::get('/job-seekers/{jobOpening}/candidates', 'JobSeekerController@candidates')->name('api.job-seeker.candidates');
+    Route::get('/job-openings/{jobOpening}/matches/saved', 'JobOpeningMatchController@savedList')->name('api.matches.saved');
+
+    Route::get('/job-seekers/{jobSeeker}/matches', 'JobSeekerController@matches')->name('api.job-seeker.matches');
+    Route::get('/job-seekers/{jobSeeker}/candidates', 'JobSeekerController@candidates')->name('api.job-seeker.candidates');
+    Route::get('/job-seekers/{jobSeeker}/screening', 'JobSeekerController@screening')->name('api.job-seeker.screening');
 
     Route::get('/firms/{firm}/matches', 'FirmController@matches')->name('api.firm.matches');
-
 });
 
-
 Route::group([
-    'prefix' => 'auth'
+    'prefix' => LaravelLocalization::setLocale(),
+    'middleware' => [
+        'localize',
+    ]
 ], function () {
-    Route::post('login', 'Auth\AuthController@login');
-    Route::post('signup', 'Auth\AuthController@signup');
+    Route::post('auth/login', 'Auth\AuthController@login');
+    Route::post('auth/signup', 'Auth\AuthController@signup');
 
     Route::group([
         'middleware' => 'auth:api'
     ], function () {
-        Route::get('logout', 'Auth\AuthController@logout');
+        Route::get('auth/logout', 'Auth\AuthController@logout');
     });
 });

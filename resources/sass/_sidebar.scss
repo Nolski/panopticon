@@ -57,8 +57,8 @@
     margin-left: 0;
   }
   #sidebar {
-    min-width: 250px;
-    max-width: 250px;
+    min-width: 220px;
+    max-width: 220px;
     min-height: 100vh;
   }
 
@@ -72,8 +72,8 @@
     margin-left: 0;
   }
   #sidebar {
-    min-width: 250px;
-    max-width: 250px;
+    min-width: 220px;
+    max-width: 220px;
     min-height: 100vh;
   }
 
@@ -87,8 +87,8 @@
     margin-left: 0;
   }
   #sidebar {
-    min-width: 270px;
-    max-width: 270px;
+    min-width: 240px;
+    max-width: 240px;
     min-height: 100vh;
   }
 
@@ -111,26 +111,53 @@
   #sidebar:not(.minified) {
     height: 80px !important;
     width: 80px !important;
-    overflow: hidden !important;
+    overflow: hidden ;
     opacity: .6;
-    .toggle-lang{
+    .toggle-lang {
       flex-direction: column;
     }
 
   }
-
-  #sidebar.minified{
+  .toggle-lang {
+    a {
+      margin-bottom: 0.3rem;
+      padding-top:.5rem;
+      font-size: .875rem;;
+    }
+  }
+  #sidebar.minified {
     opacity: 0.9;
+    overflow-y: auto ;
+    max-height: 100% !important;
   }
 }
 
 @media (min-width: 768px) {
+  #sidebar:not(.minified) {
+    overflow: auto ;
+  }
+  #sidebar.minified{
+    overflow: auto ;
+  }
+  #sidebar {
+    overflow-y: auto ;
+    .toggle-lang {
+      flex-direction: row !important;
+    }
+  }
+  #sidebar.minified {
+    .toggle-lang {
+      flex-direction: column !important;
+    }
+  }
 
   .wrapper:not(.collapsed) {
-    .body-container {
+    .body-container:not(.login) {
       max-width: calc(95%) !important;
       padding-left: 16.5rem;
+
     }
+
   }
 
   .wrapper.collapsed {
@@ -138,12 +165,13 @@
       max-width: calc(100% - 50px) !important;
       padding-left: 5.5rem;
     }
+
   }
 
-  #sidebar{
+  #sidebar {
     position: fixed;
   }
-  #sidebar.minified{
+  #sidebar.minified {
     width: 80px !important;
     .hide-min {
       display: none;
@@ -170,16 +198,15 @@
 
   }
 
-  #sidebar:not(.minified){
+  #sidebar:not(.minified) {
     opacity: 1;
   }
-
 
 }
 
 @media (min-width: 992px) {
   .wrapper:not(.collapsed) {
-    .body-container {
+    .body-container:not(.login) {
       max-width: calc(98%) !important;
       padding-left: 16.5rem;
     }
@@ -206,7 +233,6 @@
     }
   }
 }
-
 
 @media only screen and (min-width: 1350px) {
   .wrapper.collapsed {

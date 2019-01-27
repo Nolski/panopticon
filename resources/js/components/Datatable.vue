@@ -52,7 +52,7 @@
                 :text="row[head.name].component.text"
               />
               <span
-                v-else-if="head.clickable_from && row[head.clickable_from]"
+                v-else-if="permissions.can_see !== false && head.clickable_from && row[head.clickable_from]"
                 class="py-1 whitespace-no-wrap  block"
                 dir="auto"
               >
@@ -98,6 +98,12 @@
       v-else
       custom-class="min-h-200 text-lg mb-4"
     />
+    <div
+      v-if="rows.length > 0"
+      class=" text-xs my-3 pl-2"
+    >
+      {{ 'irc.viewing' | trans }} {{ rows.length }} {{ 'irc.out_of' | trans }} {{ pagination.total }}
+    </div>
     <Pagination
       v-if="pagination.lastPage > 1"
       :total-pages="pagination.lastPage"
@@ -156,13 +162,11 @@
       rows: {
         type: Array,
         default: () => []
+      },
+      permissions : {
+        type: Object,
+        default:() => ({})
       }
-    },
-
-    mounted(){
-      console.log(
-        this.$scopedSlots
-      )
     },
     methods:{
       getRowValue(row,{valueHandler,name}){

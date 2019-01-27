@@ -13,6 +13,11 @@ class LocalizationMiddlewareTest extends TestCase
 
     public function test_url_ignore_locale_param_in_url_when_its_default()
     {
+
+        $this->login();
+
+        $this->createUserRoleWithPermission(auth()->user(), 'users_management');
+
         config(['app.locale' => 'en']);
 
         $this->withoutExceptionHandling();
@@ -22,17 +27,6 @@ class LocalizationMiddlewareTest extends TestCase
         $this->get('/')->assertSuccessful();
 
         $this->assertEquals('en', App::getLocale());
-    }
-
-    public function Xtest_url_ignore_locale_param_in_url_when_its_default_XX()
-    {
-        config(['locale' => 'en']);
-
-        $this->initDashboard();
-
-        $this->get('/ar')->assertSuccessful();
-
-        $this->assertEquals('ar', App::getLocale());
     }
 
 

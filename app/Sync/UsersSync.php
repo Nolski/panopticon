@@ -67,6 +67,9 @@ class UsersSync
 
         $user->name = array_get($data,'first_name') . ' ' . array_get($data,'last_name');
 
+        $user->commcare_username = array_get($data,'username');
+
+
         $user->save();
     }
 

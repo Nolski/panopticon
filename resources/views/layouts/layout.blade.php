@@ -27,9 +27,12 @@
     @if(auth()->check())
         @include('layouts.sidebar')
     @endif
-
-    <div class="p-10 container body-container mx-auto pr-2 sm:pl-16 md:pl-10 {{!auth()->check()? ' flex items-center' :''}}" id="app">
-        @if(auth()->check())
+        {{--<div class="bg-red ">--}}
+            {{--{!! switch_url(true) !!}--}}
+        {{--</div>--}}
+    <div class="p-10 container body-container mx-auto pr-2 sm:pl-16 md:pl-10  {{!auth()->check() ? ' flex justify-center flex-col login' :''}}" id="app">
+        @if (session('status') && auth()->check())
+            <alert type="success" message="{{ session('status') }}"></alert>
         @endif
         @yield('content')
     </div>
@@ -38,9 +41,11 @@
 </html>
 
 <script type="text/javascript">
-    window.appURL = '{{ url('/') }}';
-    window.homeUrl = '{{ route('home') }}'
-
+  window.appURL = '{{ url('/') }}';
+  window.homeUrl = '{{ route('home') }}'
+  @auth
+      window.userRoles = {!! auth()->user()->roles->toJson() !!}
+    @endauth
 </script>
 
 <script
@@ -49,12 +54,12 @@
         crossorigin="anonymous"></script>
 
 <script type="text/javascript">
-    $(document).ready(function () {
-        $('#sidebarCollapse').on('click', function () {
-            $('#sidebar').toggleClass('minified');
-            $('.wrapper ').toggleClass('collapsed');
-        });
+  $(document).ready(function () {
+    $('#sidebarCollapse').on('click', function () {
+      $('#sidebar').toggleClass('minified');
+      $('.wrapper ').toggleClass('collapsed');
     });
+  });
 </script>
 
 <script src="{{asset('./js/messages.js')}}"></script>

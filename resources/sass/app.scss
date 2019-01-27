@@ -10,7 +10,6 @@
 @import "~tailwindcss/utilities.css";
 @import "~tailwindcss/preflight.css";
 @import '~fullcalendar/dist/fullcalendar.css';
-
 @import './style.css';
 @import './breadcrumbs';
 
@@ -509,7 +508,7 @@ table.scrollable-fixed-header {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  max-height: 42px !important;
+  //max-height: 42px !important;
   min-height: 42px !important;
 
   cursor: pointer;
@@ -773,8 +772,8 @@ body, html {
   &:after {
     position: absolute;
     width: 30px;
-    top: 2px;
-    right: 39%;
+    top: 3px;
+    right: 38%;
     background-color: #5cb657;
     opacity: .5;
     height: 30px;
@@ -895,11 +894,10 @@ body, html {
   transform: rotate(45deg);
 }
 
-
 @media only screen and (min-width: 300px) {
   .wrapper.collapsed {
     .body-container {
-      max-width: calc(100% - 10px) ;
+      max-width: calc(100% - 10px);
     }
   }
 
@@ -911,9 +909,6 @@ body, html {
   }
 }
 
-
-
-
 @media only screen and (max-width: 768px) {
   #sidebar {
     position: fixed;
@@ -922,13 +917,14 @@ body, html {
   }
 }
 
-
 .bounce-enter-active {
   animation: bounce-in .7s;
 }
+
 .bounce-leave-active {
   animation: none;
 }
+
 @keyframes bounce-in {
   0% {
     transform: scale(0);
@@ -941,28 +937,92 @@ body, html {
   }
 }
 
-[dir=rtl] .icon-Right_Arrow_1_1:before{
+[dir=rtl] .icon-Right_Arrow_1_1:before {
   transform: scale(-1);
   display: inline-block;
 }
 
-[dir=rtl] .checkmark{
+[dir=rtl] .checkmark {
   transform: scaleX(-1);
   display: inline-block;
 }
 
-
-#sidebar.minified .toggle-lang{
-  flex-direction: column;
-
-  .minifiy-button{
+#sidebar.minified .toggle-lang {
+  .minifiy-button {
     margin-top: 10px;
+  }
+
+}
+
+[dir=rtl] .fa-chevron-right,
+[dir=rtl] .fa-chevron-left {
+
+  transform: scaleX(-1);
+}
+
+.login {
+  .form-check-label {
+    display: initial;
+    padding-left: 5px;
+  }
+}
+
+#calendar.fc-rtl {
+  .fc-highlight:after {
+    position: absolute;
+    width: 30px;
+    top: 3px;
+    opacity: .5;
+    height: 30px;
+    content: "";
+    //right: 37%;
+  }
+
+  .fc-day-grid .fc-row:first-child .fc-highlight:after {
+    top: 7px;
+  }
+}
+
+//for the count of the followups
+@media only screen and (min-width: 500px) {
+  #calendar.fc-rtl {
+    .fc-highlight:after {
+      left: 38%;
+      //background: red !important;
+    }
   }
 }
 
 
-[dir=rtl] .fa-chevron-right,
-[dir=rtl] .fa-chevron-left{
+.swal2-popup {
+  .swal2-header,.swal2-actions {
+    font-size: 0.7rem;
+  }
+}
 
-  transform: scaleX(-1);
+
+.multiselect__tags-wrap{
+  display: flex;
+  flex-wrap: wrap;
+}
+
+
+.flip-image{
+  transform: rotate(-180deg);
+}
+
+.image-top .image-container{
+  position: relative;
+  a{
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: .75rem;
+    text-decoration: none;
+    font-size: 1.1rem;
+  }
+}
+
+.body-container{
+  transition: all .3s;
 }

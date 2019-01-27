@@ -31,6 +31,7 @@ class SortableCase implements SortableInterface
         }
 
         $columnName = $this->request->input('sorting.column');
+
         if (!in_array($columnName, withCount($model)) and PropertyMetaData::typeIs($caseType)->columnIs($columnName)->count() === 0) {
             return;
         }

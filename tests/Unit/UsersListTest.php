@@ -24,6 +24,8 @@ class UsersListTest extends TestCase
 
         $this->loginApi($users[0]);  // login with the one of the users. so the count will be 5 not 6.
 
+        $this->createUserRoleWithPermission(auth()->user(), 'users_management');
+
         $response = $this->get('api/users')
             ->assertStatus(200)
             ->assertJsonCount(5, 'data')

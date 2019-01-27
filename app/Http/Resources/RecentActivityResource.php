@@ -20,11 +20,13 @@ class RecentActivityResource extends JsonResource
             'created_at_text' => $this->created_at->format('l d F'),
             'entity_type' => case_type($this->entity_type),
             'title' => $this->title,
-            'entity' => [
-                'id' => $this->entity->id,
-                'name' => $this->getResourceDisplayName($this->entity),
-                'details_url' => $this->entity->details_url,
-            ],
+            'entity' => $this->whenLoaded('entity', function(){
+                return [
+                    'id' => $this->entity->id,
+                    'name' => $this->getResourceDisplayName($this->entity),
+                    'details_url' => $this->entity->details_url,
+                ];
+            }),
             'icon' => 'icon-Calendar_2_x40_2xpng_2'
         ];
     }

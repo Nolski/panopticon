@@ -19,10 +19,12 @@ class FirmCard extends Card
     {
         $query = $this->getQuery();
 
+        $query->where('user_id', auth()->user()->id);
+
         switch ($this->method) {
             case 'count':
             default:
-                return $query->where('user_id', auth()->user()->id)->count();
+                return $query->count();
 
         }
     }

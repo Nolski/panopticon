@@ -68,21 +68,28 @@ class CaseDataResource extends ResourceCollection
             $filters[] = [
                 'name' => $property->column_name,
                 'label' => $label,
-                'type' => strtolower($property->attributes['type']) ?? 'text',
+                'type' => isset($property->attributes['type']) ? strtolower($property->attributes['type'])  : 'text',
                 'options' => PropertyOptionsResource::collection(collect($property->attributes['options'] ?? [])),
             ];
         }
 
         $headers[0]['clickable_from'] = 'details_url';
 
+        $permissions = [
+            'notes' => $this->canAddNotes($request),
+            'can_see' => $this->hasPermissionOn($request,'cases.' . $this->caseType)
+        ];
+
+        if($this->caseType === 'job-opening'){
+            $permissions['can_see'] =    $this->hasPermissionOn($request,'cases.matches');
+        }
+
         return [
             'headers' => $headers,
             'filters' => $filters,
             'columns' => $columns,
             'sorting' => $this->getSorting($request, $properties),
-            'permissions' => [
-                'notes' => $this->canAddNotes($request),
-            ]
+            'permissions' => $permissions
         ];
     }
 
@@ -93,8 +100,13 @@ class CaseDataResource extends ResourceCollection
         $sorting = $request->input('sorting', []);
 
         if (!is_array($sorting) || (!in_array(array_get($sorting, 'column'), withCount($model)) and !$properties->has($request->input('sorting.column')))) {
-            $sorting = [];
+            $sorting = [
+                'column' => null,
+                'type' => array_get($sorting, 'type')
+            ];
         }
+
+
 
         return [
             'column' => array_get($sorting, 'column'),
@@ -132,6 +144,14 @@ class CaseDataResource extends ResourceCollection
     {
         try{
             return $request->user()->hasPermissionTo("notes.{$this->caseType}");
+        }catch (\Throwable $e){
+            return false;
+        }
+    }
+    protected function hasPermissionOn($request,$permission)
+    {
+        try{
+            return $request->user()->hasPermissionTo($permission);
         }catch (\Throwable $e){
             return false;
         }

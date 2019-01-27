@@ -29,8 +29,13 @@
     <div class=" text-left text-sm text-black font-bold">
       {{ body }}
     </div>
-
-    <div class="flex mt-4">
+    <div
+      v-if="type"
+      class="note-type text-green text-xs mt-4"
+    >
+      {{ type }}
+    </div>
+    <div class="flex ">
       <div
         v-if="showCreatorDetails"
         class="flex-1"
@@ -39,7 +44,7 @@
           {{ 'irc.from' | trans }} {{ author }}
         </div>
         <div class="uppercase">
-          {{ date }}
+          {{ getTranslatedDate }}
         </div>
       </div>
 
@@ -67,14 +72,31 @@
           {{ 'irc.note_from' | trans }} {{ author }}
         </div>
         <div class="text-grey text-sm mb-1">
-          {{ date }}
+          {{ getTranslatedDate }}
         </div>
         <button
           v-if="showStar"
           class="absolute pin-t pin-r text-xl hover:text-2xl px-3 py-4 font-bold text-green-dark"
           @click="noteStarClicked"
         >
-          <i class="icon-Star_x40_2xpng_2" />
+          <Transition
+            v-if="!isStarred"
+            mode="out-in"
+            name=""
+          >
+            <i :class="`icon-Star_x40_2xpng_2`" />
+          </Transition>
+
+          <Transition
+            v-else
+            mode="out-in"
+            name="bounce"
+          >
+            <img
+              width="20"
+              src="../../../public/svg/star-filled.svg"
+            >
+          </Transition>
         </button>
       </div>
 
@@ -92,6 +114,8 @@
 
 
 <script>
+  import moment from 'moment'
+
   export default {
     /**
      * all props have their needed types
@@ -119,6 +143,10 @@
         type: String,
         default: 'Mohammad Karmi'
       },
+      type: {
+        type: String,
+        default: null
+      },
       body: {
         type: String,
         default: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s\n' +
@@ -143,6 +171,16 @@
     data() {
       return {
         showFullNote: false,
+        locale: document.documentElement.lang === 'ar' ? 'ar' : 'en'
+      }
+    },
+    computed: {
+      getTranslatedDate() {
+        if (this.date) {
+          return moment(this.date).locale(this.locale).format('dddd DD MMMM')
+        }
+
+        return null
       }
     },
     methods: {
@@ -157,7 +195,7 @@
       showFullNoteModal() {
         this.showFullNote = true;
       }
-    }
+    },
   }
 </script>
 

@@ -1,8 +1,8 @@
 <template>
   <div class="flex flex-wrap">
-    <div class="w-full lg:w-1/3 lg:pr-2">
+    <div class="w-full lg:w-1/3 lg:pr-2 pb-3">
       <Panel
-        custom-class="min-h-642"
+        custom-class="min-h-full"
         :has-title="hasTitle"
         :title="firm.firm_name"
       >
@@ -38,7 +38,7 @@
               <a
                 v-if="firm.city"
                 class="link text-blue-dark font-bold"
-                :href="`${homeUrl}/firms?filters[city]=${firm.city}`"
+                :href="`${homeUrl}/firms?filters[city]=${firm.city_key}`"
               >
                 {{ firm.city }}
               </a>
@@ -87,8 +87,9 @@
         <Notebox
           v-if="starredNote"
           :body="starredNote.note"
-          :date="starredNote.date"
-          :author="starredNote.author"
+          :date="starredNote.created_at_text"
+          :author="starredNote.user.name"
+          :type="starredNote.type"
           :show-star="false"
           :show-creator-details="false"
           custom-class="border-none pl-0"
@@ -105,7 +106,7 @@
     <div class="w-full lg:w-2/3 lg:px-2">
       <Panel
         :has-title="hasTitle"
-        custom-class="max-h-600 overflow-y-auto"
+        custom-class="min-h-full min-h-700 max-h-700 overflow-y-auto"
         :title="'irc.job_openings' | trans"
       >
         <ul class="list-reset flex border-0 custom-navs mb-4">
@@ -127,7 +128,18 @@
                                 text-grey-dark text-sm font-semibold"
               @click="changeViewType('matches')"
             >
-              {{ 'irc.matches' | trans }}
+              {{ 'irc.match_statuses.hired' | trans }}
+            </button>
+          </li>
+
+          <li class=" flex-inline mr-2">
+            <button
+              :class="{active:viewType === 'notes'}"
+              class="nav-link border-0 py-2 px-4
+                                text-grey-dark text-sm font-semibold"
+              @click="changeViewType('notes')"
+            >
+              {{ 'irc.notes' | trans }}
             </button>
           </li>
         </ul>
@@ -143,6 +155,7 @@
               <JobOpening
                 v-for="jobOpening in jobOpenings"
                 :key="jobOpening.id"
+                :can-see="canSeeMatches"
                 :city="firm.city || firm.district"
                 :job-opening="jobOpening"
               />
@@ -170,47 +183,31 @@
               :change-url="false"
             />
           </div>
-        </div>
-      </Panel>
 
-      <Panel
-        :has-title="hasTitle"
-        :title="'irc.notes' | trans"
-      >
-        <Btn
-          :theme="'success'"
-          :btn-class="'mb-2 uppercase absolute pin-t pin-r mt-4 mr-4'"
-          @click="showAddModalNote = true"
-        >
-          <template slot="text">
-            {{ 'irc.add_note' | trans }}
-          </template>
-        </Btn>
+          <div
+            v-show="viewType === 'notes'"
+            id="notes"
+            class="tab-pane fade in"
+          >
+            <Btn
+              :theme="'success'"
+              :btn-class="'mb-2 uppercase absolute pin-t pin-r mt-4 mr-4'"
+              @click="showAddModalNote = true"
+            >
+              <template slot="text">
+                {{ 'irc.add_note' | trans }}
+              </template>
+            </Btn>
 
-        <div v-if="notes.length && !notesLoading">
-          <Notebox
-            v-for="note in notes"
-            :id="note.id"
-            :key="note.id"
-            :date="note.created_at_text"
-            :author="note.user.name"
-            :body="note.note"
-            :is-starred="note.is_starred"
-            @noteStarred="changeStarredNote"
-          />
+            <NotesList
+              case-type="firm"
+              :case-id="firm.id"
+              :additional-note="addedNote"
+              @starred="starredNote = $event"
+              @fetched="starredNote = $event.starred"
+            />
+          </div>
         </div>
-        <div v-else-if="!notes.length && notesLoading">
-          <PageLoader
-            :message="'irc.notes_loading' | trans"
-          />
-        </div>
-        <EmptyState
-          v-else
-          icon="icon-Note_x40_2xpng_2 text-3xl mt-3 block"
-          :message="'irc.no_notes_available' | trans"
-          custom-class="mt-5 min-h-200 text-lg"
-        />
-        <!--<notebox></notebox>-->
       </Panel>
     </div>
 
@@ -248,12 +245,15 @@
         matches: [],
         matchedEndPoint: '',
         jobOpeningsLoading: true,
-        notes: [],
-        starredNote: null
+        starredNote: null,
+        addedNote: null,
+        canSeeMatches: true
       }
     },
     computed: {
-        homeUrl: function () { return window.homeUrl; }
+      homeUrl: function () {
+        return window.homeUrl;
+      }
     },
     mounted() {
       this.matchedEndPoint = `api/firms/${this.firm.id}/matches`;
@@ -271,54 +271,21 @@
       }).then(({data}) => {
         this.jobOpeningsLoading = false
         this.jobOpenings = data.data
+        this.canSeeMatches = data.permissions.can_see
       });
-
-      getNotes('firm', this.firm.id)
-          .then(({data}) => {
-            this.notes = data.data;
-            this.notesLoading = false;
-            this.notes.forEach(note => {
-              if (note.is_starred) {
-                this.starredNote = note;
-              }
-            })
-          }).catch(error => {
-        console.log('Error : ', error);
-      });
-
     },
     methods: {
-      changeStarredNote(note) {
-        starNote('firm', this.firm.id, note.id)
-            .then(({data})=> {
-              if (data.note.is_starred) {
-                this.starredNote = data.note;
-              } else {
-                this.starredNote = null;
-              }
-
-              this.$toasted.show(data.message, {
-                icon: 'icon-Stars_x40_2xpng_2 mr-2'
-              })
-
-              this.notes.forEach(note => {
-                note.is_starred = (data.note.id === note.id) && (data.note.is_starred);
-              });
-            })
-            .catch(error => {
-              console.log('Error ', error)
-            });
-
-      },
       addNoteToList(noteText, type) {
         addNote('firm', this.firm.id, {note: noteText, type: type})
             .then(resp => {
-              this.notes.push(resp.data.note);
-            }).catch(error => {
-          console.log('Error : ', error);
-        });
-
-
+              this.addedNote = resp.data.note;
+            })
+            .catch(error => {
+              this.$toasted.show(error.response.data.errors.note[0], {
+                icon: 'icon-Error_x40_2xpng_2',
+                className: 'toast-error'
+              })
+            });
       },
       changeViewType(type) {
         this.viewType = type;

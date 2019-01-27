@@ -50,15 +50,36 @@ class UserRequest extends FormRequest
 
     private function passwordValidation($isUpdate)
     {
+        $passwordRegexValidation = config('irc.password_regex_validation');
+
+
         if ($isUpdate) {
             if ($this->get('password', null)) {
-                return 'confirmed';
+                return "confirmed|min:8|regex:$passwordRegexValidation";
             }
             return '';
         }
 
-        return 'required|confirmed';
+        return "required|confirmed|min:8|regex:$passwordRegexValidation";
 
     }
+
+    public function messages()
+    {
+        return [
+            'password.regex' => trans('passwords.password_rules')
+        ];
+    }
+
+    public function attributes()
+    {
+        return [
+            'password' => trans('validation.attributes.password'),
+            'name' => trans('validation.attributes.name'),
+            'email' => trans('validation.attributes.email'),
+            'profile_picture' => trans('validation.attributes.profile_picture'),
+        ];
+    }
+
 
 }
