@@ -15,11 +15,11 @@ class FollowupsExport extends Export
     public function getHeaders()
     {
         return [
-            'ID',
-            'Followup Type',
-            'Followup Date',
-            'Followup Period',
-            'Followup Name',
+            trans('irc.id'),
+            trans('irc.type'),
+            trans('irc.name'),
+            trans('irc.due_date'),
+            trans('irc.background'),
         ];
     }
 
@@ -30,14 +30,15 @@ class FollowupsExport extends Export
     public function getData()
     {
         $followups = $this->data->toArray(request());
-
         $followups = array_map(function ($item) {
-            return array_merge(
-                array_only($item, ['id', 'followup_type', 'followup_date', 'followup_period']),
-                [
-                    'followup_name' => data_get($item, 'followup.name'),
-                ]
-            );
+            return [
+                'id' => array_get($item, 'followup.id'),
+                'type' => array_get($item,'type'),
+                'followup_name' => array_get($item,'followup.name'),
+                'due_date' => array_get($item,'followup_date'),
+                'background' => implode(', ', array_get($item,'followup.background',[])),
+            ];
+
         }, $followups);
 
         return $followups;

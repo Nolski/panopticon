@@ -36,6 +36,8 @@ class Kernel extends ConsoleKernel
 
          $schedule->command('sync:data match')->dailyAt('17:06');
 
+         $schedule->command('sync:match_scores')->dailyAt('17:20');
+
          $schedule->command('sync:activities job-seeker-monthly-followup')->dailyAt('17:10');
 
          $schedule->command('sync:activities firm-monthly-followup')->dailyAt('17:10');

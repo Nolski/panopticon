@@ -49,6 +49,10 @@ class Firm extends AbstractCase
             'fmob' => [
                 'column_name' => 'contact_mobile',
                 'column_type' => 'string'
+            ],
+            'cmob' => [
+                'column_name' => 'followup_contact_mobile',
+                'column_type' => 'string'
             ]
         ];
     }

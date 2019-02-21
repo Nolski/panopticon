@@ -134,7 +134,7 @@ class CaseDataResource extends ResourceCollection
         });
 
         if (!count($columns)) {
-            return $properties->pluck('column_name')->take(15)->toArray();
+            return $properties->pluck('column_name')->toArray();
         }
 
         return $columns;

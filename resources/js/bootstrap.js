@@ -33,6 +33,10 @@ if (apiToken) {
 
 window.axios.defaults.baseURL = `/${document.documentElement.lang}/`
 
+
+window.locale = document.documentElement.lang === 'ar' ? 'ar' : 'en'
+
+
 /**
  * Echo exposes an expressive API for subscribing to channels and listening
  * for events that are broadcast by Laravel. Echo and event broadcasting

@@ -19,7 +19,7 @@ return [
     'total_job_seekers_monthly_intakes' => 'مدخلات الباحثين عن عمل لهذا الشهر',
     'total_pending_followups' => 'متابعات معلقة',
     'total_job_openings' => 'الوظائف المفتوحة',
-    'total_firms_per_user' => 'عدد مدخلات اصحاب العمل لهذا الشهر',
+    'total_firms_per_user' => 'عدد مدخلات اصحاب العمل',
     'followups' => 'المتابعات',
     'recent_activity' => 'اخر النشاطات',
     'no_data_to_present' => 'لا يوجد بيانات لعرضها.',
@@ -145,6 +145,11 @@ return [
 
     'job_opening_saved_match' => 'المتوافقين مع الوظيفة',
 
-    'matches_saved' => 'تم حفظ المتوافقين.'
+    'matches_saved' => 'تم حفظ المتوافقين.',
+    'date' => 'التاريخ',
+
+    'added_on' => 'اضيف في',
+    'hired_in' => 'تم توظيفه',
+    'in_firm' => 'في شركة'
 
 ];

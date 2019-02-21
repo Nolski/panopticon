@@ -29,6 +29,31 @@ class MatchScoresSync
     }
 
 
+    protected function sync($request)
+    {
+        $jopOpeningIds = $this->getJobOpeningIds();
+
+        $responses = $request->data(array_keys($jopOpeningIds));
+
+        $jobSeekerMapping = $this->jobSeekerMapping();
+
+        foreach ($responses as $jobId => $response) {
+
+            $response = array_get($response, 'value');
+
+            if(!$response || $response->getStatusCode() !== 200){
+                continue;
+            }
+
+            $body = $response->getBody()->getContents();
+            $body = json_decode($body, true);
+            if($body['status'] === 'complete'){
+                MatchScore::where('job_opening_id',$jopOpeningIds[$jobId])->delete();
+                $this->saveMatches($body['scores'], $jobSeekerMapping, $jopOpeningIds[$jobId]);
+            }
+        }
+    }
+
     /**
      * @param $jobSeekers
      * @param $jobSeekerMapping
@@ -77,23 +102,4 @@ class MatchScoresSync
     }
 
 
-    protected function sync($request)
-    {
-
-        $jopOpeningIds = $this->getJobOpeningIds();
-
-        $responses = $request->data($jopOpeningIds);
-
-        $jobSeekerMapping = $this->jobSeekerMapping();
-
-        foreach ($responses as $jobId => $response) {
-
-            $response = array_get($response, 'value');
-            $body = $response->getBody()->getContents();
-            $body = json_decode($body, true);
-
-
-            $this->saveMatches($body['scores'], $jobSeekerMapping, $jobId);
-        }
-    }
 }

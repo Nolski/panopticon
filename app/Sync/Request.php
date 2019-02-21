@@ -90,4 +90,17 @@ abstract class Request
     }
 
 
+    public static function postAsync($urls, $options, $waitAll = true)
+    {
+        $guzzleClient = new \GuzzleHttp\Client();
+        $promises = [];
+
+        foreach ($urls as $key => $url) {
+            $promises[$key] = $guzzleClient->postAsync($url, $options);
+        }
+
+        $responses = $waitAll ? Promise\settle($promises)->wait() : Promise\unwrap($promises);
+
+        return $responses;
+    }
 }

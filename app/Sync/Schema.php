@@ -19,6 +19,11 @@ class Schema
             }
 
             foreach ($fields as $field) {
+
+                if(!array_get($field,'create_column', true)){
+                    continue;
+                }
+
                 $column = $table->{$field['column_type']}($field['column_name'])->nullable();
 
                 $defaultValue = array_get($field,'default');

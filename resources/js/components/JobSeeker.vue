@@ -134,6 +134,25 @@
               </span>
             </div>
           </ListItem>
+
+          <ListItem
+            v-for="hired in jobSeeker.hired_matches"
+            :key="hired.id"
+            icon="icon-Diamond_x40_2xpng_2"
+          >
+            <div>
+              <span class="text-green font-bold mr-2">
+                {{ 'irc.hired_in' | trans }}
+              </span>
+              <span>
+                {{ hired.job_title }}
+              </span>
+              <span class="mx-1">
+                •
+              </span>
+              <span>{{ hired.firm.firm_name }}</span>
+            </div>
+          </ListItem>
         </ul>
 
         <div class="stared-note uppercase text-green text-left font-bold mt-10 -mb-2">

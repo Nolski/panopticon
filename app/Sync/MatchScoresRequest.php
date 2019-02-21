@@ -8,8 +8,6 @@ class MatchScoresRequest extends Request
      */
     protected $url = 'https://theirc-tashbeek-staging.azurewebsites.net/job-matches/';
 
-    protected $authorization = 'Token n3JLVpNimaRTeXILL1oRPuIiiSEEA0izSxHojyaxsTgzNfjrk52scncnpvwC';
-
     /**
      * @param array $jopOpeningIds
      * @return mixed
@@ -21,7 +19,7 @@ class MatchScoresRequest extends Request
         $options = [
             'headers' => [
                 'Content-Type' => 'text/xml',
-                'Authorization' => $this->authorization
+                'Authorization' => 'Token ' . config('irc.ml_api_key')
             ],
         ];
 

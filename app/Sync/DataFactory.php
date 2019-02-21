@@ -90,6 +90,8 @@ class DataFactory
 
         $model = $caseObject->model()::updateOrCreate($caseObject->savingKeys($data), $data);
 
+        $this->createNotes($model, $case);
+
         $this->scheduleFollowups($model);
     }
 
@@ -137,7 +139,9 @@ class DataFactory
 
         $data['commcare_id'] = $case['id'];
 
-        $data['user_id'] = optional(User::where('commcare_id',$case['user_id'])->first())->id ;
+        $userId = array_get($case,'opened_by', $case['user_id']);
+
+        $data['user_id'] = optional(User::where('commcare_id',$userId)->first())->id ;
 
         return $data;
     }
@@ -187,6 +191,29 @@ class DataFactory
                     'type' => 'scheduled',
                     'user_id' => $model->user_id,
                 ]);
+            }
+        }
+    }
+
+    public function createNotes($model, $case)
+    {
+        $esoComments = array_get($case, 'properties.eso_comments');
+
+        if(!empty(trim($esoComments))){
+            if(method_exists($model,'notes')){
+                $note = $model->notes()->where('commcare_id',$model->commcare_id )->first();
+                if(!$note){
+                    $model->notes()->create([
+                        'note' => $esoComments,
+                        'user_id' => $model->user_id,
+                        'commcare_id' => $model->commcare_id,
+                        'created_at' => $model->opened_at,
+                    ]);
+                }else{
+                    $note->update([
+                        'note' => $esoComments,
+                    ]);
+                }
             }
         }
     }

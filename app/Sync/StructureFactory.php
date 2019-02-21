@@ -114,7 +114,6 @@ class StructureFactory
                         $questions->get($name),
                         array_only($question,['translations','type'])
                     );
-
                     $questionObject['case_question'] = $question;
 
                 }else if(isset($question['property'])){
@@ -142,6 +141,9 @@ class StructureFactory
         // sort questions
         $questions = [];
         foreach ($case->questions() as $name => $question) {
+            if(!$questionObjects->get($name)){
+                continue;
+            }
             array_push($questions, $questionObjects->get($name));
         }
 

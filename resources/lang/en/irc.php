@@ -143,5 +143,8 @@ return [
         'follow_up' => 'Follow Up',
     ],
 
-    'matches_saved' => 'Matches Saved'
+    'matches_saved' => 'Matches Saved',
+    'date' => 'Date',
+    'added_on' => 'Added',
+    'hired_in' => 'Hired',
 ];

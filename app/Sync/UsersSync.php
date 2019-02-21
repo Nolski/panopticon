@@ -39,7 +39,7 @@ class UsersSync
      */
     protected function saveUsers($users)
     {
-        foreach($users as $user){
+        foreach ($users as $user) {
             $this->saveUser($user);
         }
     }
@@ -51,24 +51,28 @@ class UsersSync
      */
     protected function saveUser($data)
     {
-        $user = User::where('email',$data['email'])->first();
+        $user = User::where('commcare_id', $data['id'])->first();
 
-        if(!$user){
-            $user = User::where('commcare_id',$data['id'])->first();
+        $userByEmail = User::where('email', $data['email'])->first();
+
+        if (!$user) {
+            $user = $userByEmail;
         }
 
-        if(!$user){
+        if (!$user) {
             $user = new User;
+            $user->password = Hash::make(implode('_', [$user->name, $user->commcare_id, time()]));
+        }
+
+        if (!$userByEmail) {
             $user->email = $data['email'];
-            $user->password = Hash::make(implode('_',[$user->name,$user->commcare_id,time()]));
         }
 
         $user->commcare_id = $data['id'];
 
-        $user->name = array_get($data,'first_name') . ' ' . array_get($data,'last_name');
+        $user->name = array_get($data, 'first_name') . ' ' . array_get($data, 'last_name');
 
-        $user->commcare_username = array_get($data,'username');
-
+        $user->commcare_username = array_get($data, 'username');
 
         $user->save();
     }

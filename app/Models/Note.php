@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Note extends Model
 {
-    protected $fillable = ['note', 'type', 'user_id', 'is_starred'];
+    protected $fillable = ['note', 'type', 'user_id', 'is_starred', 'commcare_id','created_at'];
 
     protected $casts = [
         'is_starred' => 'boolean'

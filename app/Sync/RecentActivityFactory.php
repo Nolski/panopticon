@@ -125,6 +125,8 @@ class RecentActivityFactory
             'created_at' => app(DateHandler::class)->resolve($form['received_on']),
             'user_id' => $userId
         ]);
+
+        $this->createNotes($record, $form);
     }
 
     /**
@@ -138,5 +140,29 @@ class RecentActivityFactory
         $segments = explode('/', $path);
 
         return end($segments);
+    }
+
+    public function createNotes($model, $case)
+    {
+        $comment = array_get($case, 'form.ex.comments');
+
+        if(!empty(trim($comment))){
+            if(method_exists($model,'notes')){
+                $note = $model->notes()->where('commcare_id',$model->commcare_id )->first();
+                if(!$note){
+                    $model->notes()->create([
+                        'note' => $comment,
+                        'user_id' => $model->user_id,
+                        'commcare_id' => $model->commcare_id,
+                        'created_at' => $model->created_at->toDateTimeString(),
+                        'type' => 'follow_up'
+                    ]);
+                }else{
+                    $note->update([
+                        'note' => $comment,
+                    ]);
+                }
+            }
+        }
     }
 }

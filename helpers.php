@@ -180,7 +180,7 @@ if (!function_exists('map_options')) {
 
         foreach ($data as $key => $value) {
 
-            if (empty($value) && (string)$value !== "0") {
+            if (is_array($value) || (empty($value) && (string)$value !== "0")) {
                 continue;
             }
 

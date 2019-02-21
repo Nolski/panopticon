@@ -128,9 +128,9 @@ abstract class TestCase extends BaseTestCase
         return $factory->make($caseType);
     }
 
-    protected function syncUsers()
+    protected function syncUsers($data = null)
     {
-        $this->mockUsersRequest();
+        $this->mockUsersRequest($data);
 
         app(UsersSync::class)->make();
     }

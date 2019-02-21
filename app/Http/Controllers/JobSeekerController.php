@@ -32,6 +32,8 @@ class JobSeekerController extends Controller
      */
     public function show(JobSeekerRequest $request, JobSeeker $jobSeeker)
     {
+        $jobSeeker->load(['hiredMatches','hiredMatches.firm']);
+
         return view('job-seeker.show', compact('jobSeeker'));
     }
 

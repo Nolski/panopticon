@@ -1,6 +1,7 @@
 import Toasted from 'vue-toasted';
 import VTooltip from 'v-tooltip'
 import Popper from 'vue-popperjs';
+import moment from 'moment'
 
 /**
  * First we will load all of this project's JavaScript dependencies which
@@ -81,6 +82,10 @@ Vue.component('Popper',Popper);
 
 Vue.filter('trans', function (key,value) {
   return window.Lang.get(key);
+})
+
+Vue.filter('formatted_date', function (value) {
+  return moment(value).locale(window.locale).format('dddd DD MMMM')
 })
 
 /**
