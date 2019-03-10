@@ -23,8 +23,9 @@ class MatchScoresSync
         $this->request = $request;
     }
 
-    public function make()
+    public function make($parent)
     {
+        $this->parent = $parent;
         $this->sync($this->request);
     }
 
@@ -34,6 +35,7 @@ class MatchScoresSync
         $jopOpeningIds = $this->getJobOpeningIds();
 
         $responses = $request->data(array_keys($jopOpeningIds));
+        $this->parent->info('Got responses');
 
         $jobSeekerMapping = $this->jobSeekerMapping();
 
@@ -64,6 +66,7 @@ class MatchScoresSync
         foreach ($jobSeekers as $jobSeeker) {
             $jobSeekerId = $jobSeekerMapping[$jobSeeker['case_id']] ?? null;
             if ($jobSeekerId) {
+                $this->parent->info(sprintf('Saving %s - %s - %s', $jobSeekerId, $jobId, $jobSeeker['probs']));
                 $this->saveMatch($jobSeekerId, $jobId, $jobSeeker['probs']);
             }
         }

@@ -39,7 +39,7 @@ class SyncMatchScores extends Command
     public function handle()
     {
         try {
-            app(MatchScoresSync::class)->make();
+            app(MatchScoresSync::class)->make($this);
 
             $this->info('Sync Match Scores');
         } catch (\Throwable $e) {
