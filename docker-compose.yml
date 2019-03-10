@@ -14,8 +14,7 @@ services:
           - 9000:9000
         env_file:
           - panopticon.env
-        
-        command: sh run.sh
+        command: sh run-dev.sh
     mysql:
         image: mysql:latest
         container_name: "mysql"

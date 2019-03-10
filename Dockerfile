@@ -64,10 +64,8 @@ RUN composer update
 RUN composer install
 RUN composer require mcamara/laravel-localization
 
-RUN npm install
 RUN npm install -g cross-env
-RUN npm run production
 
 # Expose port 9000 and start php-fpm server
 EXPOSE 9000
-CMD /wait && php artisan migrate && php artisan sync:structure && php artisan serve --host=0.0.0.0 --port=9000
+CMD sh run.sh
