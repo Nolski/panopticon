@@ -147,4 +147,6 @@ return [
     'date' => 'Date',
     'added_on' => 'Added',
     'hired_in' => 'Hired',
+    'firm_name' => 'Firm Name',
+    'years_exp' => 'Years of Work Experience',
 ];

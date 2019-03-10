@@ -241,6 +241,9 @@ class JobSeeker extends AbstractCase
             'years_exp' => [
                 'column_name' => 'years_exp',
                 'column_type' => 'string',
+                'translations' => [
+                    'en' => trans('irc.years_exp',[],'en'),
+                ],
             ],
 
 

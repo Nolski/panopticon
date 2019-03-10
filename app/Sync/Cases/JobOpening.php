@@ -89,6 +89,15 @@ class JobOpening extends AbstractCase
                 'column_type' => 'text',
                 'alias' => 'manager_gender'
             ],
+            'firm_name' => [
+                'column_name' => 'firm_name',
+                'column_type' => 'text',
+                'alias' => 'firm_name',
+                'translations' => [
+                    'en' => trans('irc.firm_name',[],'en'),
+                    'ara' => trans('irc.firm_name',[], 'ar')
+                ],
+            ]
 //            'employed' => [
 //                'column_name' => 'employed',
 //                'column_type' => 'string'
