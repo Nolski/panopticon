@@ -1,5 +1,6 @@
 <?php namespace App\Sync;
 
+use Illuminate\Support\Facades\Log;
 use App\Models\User;
 use App\Sync\Cases\AbstractCase;
 use App\Sync\Cases\Firm;
@@ -87,7 +88,7 @@ class DataFactory
         }
 
         $data = $this->getCaseFields($caseObject, $case);
-
+        Log::info("Updating case: " . $case['case_id']);
         $model = $caseObject->model()::updateOrCreate($caseObject->savingKeys($data), $data);
 
         $this->createNotes($model, $case);
