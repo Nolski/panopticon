@@ -49,13 +49,6 @@ COPY . /var/www
 #COPY --chown=www:www . /var/www
 
 RUN mkdir -p /usr/lib/node_modules
-#RUN chown www:www /usr/lib/node_modules -R
-#RUN chown www:www /usr/bin -R
-#RUN chown www:www /usr/local -R
-#RUN chown www:www /var/www -R
-#RUN chown www:www /var/run -R
-# Change current user to www
-#USER www
 WORKDIR /var/www
 RUN chmod +x /var/www/sync-all.sh
 RUN mkdir -p /var/www/vendor/
@@ -65,6 +58,13 @@ RUN composer install
 RUN composer require mcamara/laravel-localization
 
 RUN npm install -g cross-env
+
+# Set up crontabs
+
+COPY crontab /home/crontab
+RUN cat /home/crontab >> /etc/crontab
+RUN chmod 0644 /etc/crontab
+RUN crontab /etc/crontab
 
 # Expose port 9000 and start php-fpm server
 EXPOSE 9000
