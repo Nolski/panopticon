@@ -16,3 +16,6 @@ yarn-error.log
 report
 public/js/
 public/css/
+GTAGS
+GPATH
+GRTAGS
