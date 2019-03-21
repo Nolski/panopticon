@@ -152,11 +152,11 @@ class CaseFilter implements FilterInterface
         }
 
         if(!empty($from)){
-            $builder->where($name,'>=',$value);
+            $builder->where($name,'>=',(int)$from);
         }
 
         if(!empty($to)){
-            $builder->where($name,'<=',$to);
+            $builder->where($name,'<=',(int)$to);
         }
 
     }

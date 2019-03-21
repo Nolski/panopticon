@@ -45,8 +45,8 @@
     methods: {
       rangeInputChange(value, rangeIndicator) {
         let rangeValue = {
-          from: rangeIndicator === 'from' ? value : this.filter.filterValue.from,
-          to: rangeIndicator === 'to' ? value : this.filter.filterValue.to
+          from: rangeIndicator === 'from' ? parseInt(value) : this.filter.filterValue.from,
+          to: rangeIndicator === 'to' ? parseInt(value) : this.filter.filterValue.to
         };
         this.$emit('input', rangeValue)
       },
