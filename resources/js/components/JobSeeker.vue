@@ -94,7 +94,11 @@
             v-if="jobSeeker.mobile_num"
             icon="icon-Phone_1_x40_2xpng_2"
           >
-            {{ jobSeeker.mobile_num }}
+            <span>{{ jobSeeker.mobile_num }}</span>
+            <span class="mx-1">
+              •
+            </span>
+            <span>{{ jobSeeker.sec_contact_mobile }}</span>
           </ListItem>
 
           <ListItem
