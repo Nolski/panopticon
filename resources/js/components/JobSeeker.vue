@@ -95,10 +95,13 @@
             icon="icon-Phone_1_x40_2xpng_2"
           >
             <span>{{ jobSeeker.mobile_num }}</span>
-            <span class="mx-1">
+            <span
+              class="mx-1"
+              v-if="jobSeeker.sec_contact_mobile !== ''"
+            >
               •
             </span>
-            <span>{{ jobSeeker.sec_contact_mobile }}</span>
+            <span v-if="jobSeeker.sec_contact_mobile !== ''">{{ jobSeeker.sec_contact_mobile }}</span>
           </ListItem>
 
           <ListItem
