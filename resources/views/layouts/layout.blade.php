@@ -20,6 +20,16 @@
 
     <link rel="stylesheet" href="{{asset('./css/app.css')}}">
     <link rel="shortcut icon" href="{{{ asset('img/logo_big.png') }}}">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-137035684-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'UA-137035684-1');
+    </script>
+
 </head>
 <body class="bg-grey-light">
 <div class="wrapper bg-grey-lighter ">
